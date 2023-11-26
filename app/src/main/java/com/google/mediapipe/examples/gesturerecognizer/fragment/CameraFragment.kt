@@ -61,7 +61,7 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
     private var numResults = 1
     private val gestureAdapter: GestureRecognizerResultsAdapter by lazy {
         GestureRecognizerResultsAdapter().apply {
-            updateAdapterSize(numResults)
+            adjustDisplayItemCount(numResults)
         }
     }
 
@@ -374,7 +374,7 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
         } else {
             emptyList()
         }
-        gestureAdapter.updateResults(results)
+        gestureAdapter.refreshDisplayedResults(results)
     }
 
     private fun updateInferenceTime(resultBundle: GestureRecognizerHelper.ResultBundle) {
@@ -396,7 +396,7 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
     override fun onError(error: String, errorCode: Int) {
         activity?.runOnUiThread {
             Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
-            gestureAdapter.updateResults(emptyList())
+            gestureAdapter.refreshDisplayedResults(emptyList())
 
             if (errorCode == GestureRecognizerHelper.GPU_ERROR) {
                 cameraBinding.bottomSheetLayout.spinnerDelegate.setSelection(

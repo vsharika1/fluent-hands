@@ -25,66 +25,93 @@ import com.google.mediapipe.tasks.components.containers.Category
 import java.util.Locale
 import kotlin.math.min
 
-class GestureRecognizerResultsAdapter : RecyclerView.Adapter<GestureRecognizerResultsAdapter.ViewHolder>() {
+class GestureRecognizerResultsAdapter : RecyclerView.Adapter<GestureRecognizerResultsAdapter.ResultViewHolder>() {
     companion object {
-        private const val NO_VALUE = "--"
+        private const val DEFAULT_DISPLAY_VALUE = "--"
     }
 
-    private var adapterCategories: MutableList<Category?> = mutableListOf()
-    private var adapterSize: Int = 0
+    private var gestureCategories: MutableList<Category?> = mutableListOf()
+    private var maxDisplayItemCount: Int = 0
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateResults(categories: List<Category>?) {
-        adapterCategories = MutableList(adapterSize) { null }
-        if (categories != null) {
-            val sortedCategories = categories.sortedByDescending { it.score() }
-            val min = min(sortedCategories.size, adapterCategories.size)
-            for (i in 0 until min) {
-                adapterCategories[i] = sortedCategories[i]
-            }
-            adapterCategories.sortedBy { it?.index() }
+    fun refreshDisplayedResults(newCategories: List<Category>?) {
+        resetGestureCategories()
+        if (newCategories != null) {
+            sortAndPopulateCategories(newCategories)
             notifyDataSetChanged()
         }
     }
 
-    fun updateAdapterSize(size: Int) {
-        adapterSize = size
+    private fun resetGestureCategories() {
+        gestureCategories = MutableList(maxDisplayItemCount) { null }
     }
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): ViewHolder {
+    private fun sortAndPopulateCategories(categories: List<Category>) {
+        val sortedCategories = categories.sortedByDescending { it.score() }
+        val itemsToDisplay = min(sortedCategories.size, maxDisplayItemCount)
+        for (i in 0 until itemsToDisplay) {
+            gestureCategories[i] = sortedCategories[i]
+        }
+    }
+
+    fun adjustDisplayItemCount(newSize: Int) {
+        maxDisplayItemCount = newSize
+        initializeCategoryList()
+    }
+
+    private fun initializeCategoryList() {
+        gestureCategories = MutableList(maxDisplayItemCount) { null }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ResultViewHolder {
+        return instantiateViewHolderFrom(parent)
+    }
+
+    private fun instantiateViewHolderFrom(parent: ViewGroup): ResultViewHolder {
         val binding = ItemGestureRecognizerResultBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
         )
-        return ViewHolder(binding)
+        return ResultViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        adapterCategories[position].let { category ->
-            holder.bind(category?.categoryName(), category?.score())
+    override fun onBindViewHolder(holder: ResultViewHolder, position: Int) {
+        associateViewHolderWithData(holder, position)
+    }
+
+    private fun associateViewHolderWithData(holder: ResultViewHolder, position: Int) {
+        gestureCategories[position]?.let { category ->
+            holder.applyCategoryData(category.categoryName(), category.score())
         }
     }
 
-    override fun getItemCount(): Int = adapterCategories.size
+    override fun getItemCount(): Int = gestureCategories.size
 
-    inner class ViewHolder(private val binding: ItemGestureRecognizerResultBinding) :
+    inner class ResultViewHolder(private val binding: ItemGestureRecognizerResultBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(label: String?, score: Float?) {
-            with(binding) {
-                tvLabel.text = label ?: NO_VALUE
-                tvScore.text = if (score != null) String.format(
-                    Locale.US,
-                    "%.2f",
-                    score
-                ) else NO_VALUE
+        fun applyCategoryData(label: String?, score: Float?) {
+            displayLabel(label)
+            displayScore(score)
+            displayCurrentText()
+        }
 
-                textLabel.text = ContextHolder.currentWord
-            }
+        private fun displayLabel(label: String?) {
+            binding.tvLabel.text = label ?: DEFAULT_DISPLAY_VALUE
+        }
+
+        private fun displayScore(score: Float?) {
+            binding.tvScore.text = score?.let { formatScore(it) } ?: DEFAULT_DISPLAY_VALUE
+        }
+
+        private fun formatScore(score: Float): String {
+            return String.format(Locale.US, "%.2f", score)
+        }
+
+        private fun displayCurrentText() {
+            binding.textLabel.text = ContextHolder.currentWord
         }
     }
 }
+
