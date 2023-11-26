@@ -47,213 +47,248 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
         private const val TAG = "Hand gesture recognizer"
     }
 
-    private var _fragmentCameraBinding: FragmentCameraBinding? = null
+    private var _cameraBinding: FragmentCameraBinding? = null
 
-    private val fragmentCameraBinding get() = _fragmentCameraBinding!!
+    private val cameraBinding get() = _cameraBinding!!
 
-    private lateinit var gestureRecognizerHelper: GestureRecognizerHelper
+    private lateinit var gestureHelper: GestureRecognizerHelper
     private val viewModel: MainViewModel by activityViewModels()
-    private var defaultNumResults = 1
-    private val gestureRecognizerResultAdapter: GestureRecognizerResultsAdapter by lazy {
+    private var preview: Preview? = null
+    private var imgAnalyzer: ImageAnalysis? = null
+    private var cam: Camera? = null
+    private var camProvider: ProcessCameraProvider? = null
+    private var camFacing = CameraSelector.LENS_FACING_FRONT
+    private var numResults = 1
+    private val gestureAdapter: GestureRecognizerResultsAdapter by lazy {
         GestureRecognizerResultsAdapter().apply {
-            updateAdapterSize(defaultNumResults)
+            updateAdapterSize(numResults)
         }
     }
-    private var preview: Preview? = null
-    private var imageAnalyzer: ImageAnalysis? = null
-    private var camera: Camera? = null
-    private var cameraProvider: ProcessCameraProvider? = null
-    private var cameraFacing = CameraSelector.LENS_FACING_FRONT
 
     /** Blocking ML operations are performed using this executor */
     private lateinit var backgroundExecutor: ExecutorService
 
     override fun onResume() {
         super.onResume()
-        if (!PermissionsFragment.hasPermissions(requireContext())) {
-            Navigation.findNavController(
-                requireActivity(), R.id.fragment_container
-            ).navigate(R.id.action_camera_to_permissions)
-        }
+        checkPermissions()
+        restartGestureRecognizer()
+    }
 
-        // Start the GestureRecognizerHelper again when users come back to the foreground.
+    private fun checkPermissions() {
+        if (!PermissionsFragment.hasPermissions(requireContext())) {
+            navigateToPermissions()
+        }
+    }
+
+    private fun navigateToPermissions() {
+        Navigation.findNavController(
+            requireActivity(), R.id.fragment_container
+        ).navigate(R.id.action_camera_to_permissions)
+    }
+
+    private fun restartGestureRecognizer() {
         backgroundExecutor.execute {
-            if (gestureRecognizerHelper.isClosed()) {
-                gestureRecognizerHelper.setupGestureRecognizer()
+            if (gestureHelper.isClosed()) {
+                gestureHelper.setupGestureRecognizer()
             }
         }
     }
 
     override fun onPause() {
         super.onPause()
-        if (this::gestureRecognizerHelper.isInitialized) {
-            viewModel.setMinHandDetectionConfidence(gestureRecognizerHelper.minHandDetectionConfidence)
-            viewModel.setMinHandTrackingConfidence(gestureRecognizerHelper.minHandTrackingConfidence)
-            viewModel.setMinHandPresenceConfidence(gestureRecognizerHelper.minHandPresenceConfidence)
-            viewModel.setDelegate(gestureRecognizerHelper.currentDelegate)
+        saveGestureSettings()
+        closeGestureRecognizer()
+    }
 
-            // Close the Gesture Recognizer helper and release resources
+    private fun saveGestureSettings() {
+        if (this::gestureHelper.isInitialized) {
+            viewModel.setMinHandDetectionConfidence(gestureHelper.minHandDetectionConfidence)
+            viewModel.setMinHandTrackingConfidence(gestureHelper.minHandTrackingConfidence)
+            viewModel.setMinHandPresenceConfidence(gestureHelper.minHandPresenceConfidence)
+            viewModel.setDelegate(gestureHelper.currentDelegate)
+        }
+    }
+
+    private fun closeGestureRecognizer() {
+        if (this::gestureHelper.isInitialized) {
             backgroundExecutor.execute {
-                gestureRecognizerHelper.clearGestureRecognizer()
+                gestureHelper.clearGestureRecognizer()
             }
         }
     }
 
     override fun onDestroyView() {
-        _fragmentCameraBinding = null
         super.onDestroyView()
+        releaseResources()
+        _cameraBinding = null
+    }
 
+    private fun releaseResources() {
         backgroundExecutor.shutdown()
-        backgroundExecutor.awaitTermination(
-            Long.MAX_VALUE, TimeUnit.NANOSECONDS
-        )
+        backgroundExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _fragmentCameraBinding = FragmentCameraBinding.inflate(inflater, container, false)
-
-        return fragmentCameraBinding.root
+        _cameraBinding = FragmentCameraBinding.inflate(inflater, container, false)
+        return cameraBinding.root
     }
 
-    @SuppressLint("MissingPermission")
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(fragmentCameraBinding.recyclerviewResults) {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = gestureRecognizerResultAdapter
-        }
-        backgroundExecutor = Executors.newSingleThreadExecutor()
+        setupRecyclerView()
+        initializeBackgroundExecutor()
+        prepareCameraSetup()
+        initializeGestureRecognizerHelper()
+        setupUIControls()
+    }
 
-        fragmentCameraBinding.viewFinder.post {
+    private fun setupRecyclerView() {
+        with(cameraBinding.recyclerviewResults) {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = gestureAdapter
+        }
+    }
+
+    private fun initializeBackgroundExecutor() {
+        backgroundExecutor = Executors.newSingleThreadExecutor()
+    }
+
+    private fun prepareCameraSetup() {
+        cameraBinding.viewFinder.post {
             setUpCamera()
         }
+    }
 
-        // Create the Hand Gesture Recognition Helper that will handle the inference
+    private fun initializeGestureRecognizerHelper() {
         backgroundExecutor.execute {
-            gestureRecognizerHelper = GestureRecognizerHelper(
-                context = requireContext(),
-                runningMode = RunningMode.LIVE_STREAM,
-                minHandDetectionConfidence = viewModel.currentMinHandDetectionConfidence,
-                minHandTrackingConfidence = viewModel.currentMinHandTrackingConfidence,
-                minHandPresenceConfidence = viewModel.currentMinHandPresenceConfidence,
-                // numHands = viewModel.numberOfHandsToDetect,
-                currentDelegate = viewModel.currentDelegate,
-                gestureRecognizerListener = this
-            )
+            createGestureRecognizerHelper()
         }
+    }
 
-        // Attach listeners to UI control widgets
+    private fun createGestureRecognizerHelper() {
+        gestureHelper = GestureRecognizerHelper(
+            context = requireContext(),
+            runningMode = RunningMode.LIVE_STREAM,
+            minHandDetectionConfidence = viewModel.currentMinHandDetectionConfidence,
+            minHandTrackingConfidence = viewModel.currentMinHandTrackingConfidence,
+            minHandPresenceConfidence = viewModel.currentMinHandPresenceConfidence,
+            currentDelegate = viewModel.currentDelegate,
+            gestureRecognizerListener = this
+        )
+    }
+
+    private fun setupUIControls() {
         initBottomSheetControls()
     }
 
+
     private fun initBottomSheetControls() {
-        fragmentCameraBinding.bottomSheetLayout.detectionThresholdValue.text =
-            String.format(
-                Locale.US, "%.2f", viewModel.currentMinHandDetectionConfidence
-            )
-        fragmentCameraBinding.bottomSheetLayout.trackingThresholdValue.text =
-            String.format(
-                Locale.US, "%.2f", viewModel.currentMinHandTrackingConfidence
-            )
-        fragmentCameraBinding.bottomSheetLayout.presenceThresholdValue.text =
-            String.format(
-                Locale.US, "%.2f", viewModel.currentMinHandPresenceConfidence
-            )
+        updateThresholdValues()
+        setupThresholdAdjustmentButtons()
+        setupDelegateSpinner()
+    }
 
-        fragmentCameraBinding.bottomSheetLayout.detectionThresholdMinus.setOnClickListener {
-            if (gestureRecognizerHelper.minHandDetectionConfidence >= 0.2) {
-                gestureRecognizerHelper.minHandDetectionConfidence -= 0.1f
-                updateControlsUi()
+    private fun updateThresholdValues() {
+        with(cameraBinding.bottomSheetLayout) {
+            detectionThresholdValue.text = formatConfidence(viewModel.currentMinHandDetectionConfidence)
+            trackingThresholdValue.text = formatConfidence(viewModel.currentMinHandTrackingConfidence)
+            presenceThresholdValue.text = formatConfidence(viewModel.currentMinHandPresenceConfidence)
+        }
+    }
+
+    private fun formatConfidence(value: Float): String {
+        return String.format(Locale.US, "%.2f", value)
+    }
+
+    private fun setupThresholdAdjustmentButtons() {
+        with(cameraBinding.bottomSheetLayout) {
+            setupAdjustmentButton(detectionThresholdMinus, 0.2f, 0.1f, true) {
+                gestureHelper.minHandDetectionConfidence -= it
+            }
+            setupAdjustmentButton(detectionThresholdPlus, 0.8f, 0.1f, false) {
+                gestureHelper.minHandDetectionConfidence += it
+            }
+            setupAdjustmentButton(trackingThresholdMinus, 0.2f, 0.1f, true) {
+                gestureHelper.minHandTrackingConfidence -= it
+            }
+            setupAdjustmentButton(trackingThresholdPlus, 0.8f, 0.1f, false) {
+                gestureHelper.minHandTrackingConfidence += it
+            }
+            setupAdjustmentButton(presenceThresholdMinus, 0.2f, 0.1f, true) {
+                gestureHelper.minHandPresenceConfidence -= it
+            }
+            setupAdjustmentButton(presenceThresholdPlus, 0.8f, 0.1f, false) {
+                gestureHelper.minHandPresenceConfidence += it
             }
         }
+    }
 
-        fragmentCameraBinding.bottomSheetLayout.detectionThresholdPlus.setOnClickListener {
-            if (gestureRecognizerHelper.minHandDetectionConfidence <= 0.8) {
-                gestureRecognizerHelper.minHandDetectionConfidence += 0.1f
-                updateControlsUi()
+    private fun setupAdjustmentButton(
+        button: View,
+        threshold: Float,
+        increment: Float,
+        isDecrease: Boolean,
+        adjustment: (Float) -> Unit
+    ) {
+        button.setOnClickListener {
+            val currentConfidence = if (isDecrease) {
+                minOf(threshold + increment, gestureHelper.minHandDetectionConfidence)
+            } else {
+                maxOf(threshold - increment, gestureHelper.minHandDetectionConfidence)
             }
+            adjustment(if (isDecrease) -increment else increment)
+            updateControlsUi()
         }
+    }
 
-        fragmentCameraBinding.bottomSheetLayout.trackingThresholdMinus.setOnClickListener {
-            if (gestureRecognizerHelper.minHandTrackingConfidence >= 0.2) {
-                gestureRecognizerHelper.minHandTrackingConfidence -= 0.1f
-                updateControlsUi()
-            }
-        }
-
-        fragmentCameraBinding.bottomSheetLayout.trackingThresholdPlus.setOnClickListener {
-            if (gestureRecognizerHelper.minHandTrackingConfidence <= 0.8) {
-                gestureRecognizerHelper.minHandTrackingConfidence += 0.1f
-                updateControlsUi()
-            }
-        }
-
-        fragmentCameraBinding.bottomSheetLayout.presenceThresholdMinus.setOnClickListener {
-            if (gestureRecognizerHelper.minHandPresenceConfidence >= 0.2) {
-                gestureRecognizerHelper.minHandPresenceConfidence -= 0.1f
-                updateControlsUi()
-            }
-        }
-
-        fragmentCameraBinding.bottomSheetLayout.presenceThresholdPlus.setOnClickListener {
-            if (gestureRecognizerHelper.minHandPresenceConfidence <= 0.8) {
-                gestureRecognizerHelper.minHandPresenceConfidence += 0.1f
-                updateControlsUi()
-            }
-        }
-
-        // When clicked, change the underlying hardware used for inference.
-        // Current options are CPU and GPU
-        fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.setSelection(
-            viewModel.currentDelegate, false
-        )
-        fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
-                ) {
+    private fun setupDelegateSpinner() {
+        with(cameraBinding.bottomSheetLayout.spinnerDelegate) {
+            setSelection(viewModel.currentDelegate, false)
+            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     try {
-                        gestureRecognizerHelper.currentDelegate = p2
+                        gestureHelper.currentDelegate = position
                         updateControlsUi()
                     } catch (e: UninitializedPropertyAccessException) {
                         Log.e(TAG, "GestureRecognizerHelper has not been initialized yet.")
                     }
                 }
 
-                override fun onNothingSelected(p0: AdapterView<*>?) {}
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
+        }
     }
+
 
     // Update the values displayed in the bottom sheet. Reset recognition helper.
     private fun updateControlsUi() {
-        fragmentCameraBinding.bottomSheetLayout.detectionThresholdValue.text =
+        cameraBinding.bottomSheetLayout.detectionThresholdValue.text =
             String.format(
                 Locale.US,
                 "%.2f",
-                gestureRecognizerHelper.minHandDetectionConfidence
+                gestureHelper.minHandDetectionConfidence
             )
-        fragmentCameraBinding.bottomSheetLayout.trackingThresholdValue.text =
+        cameraBinding.bottomSheetLayout.trackingThresholdValue.text =
             String.format(
                 Locale.US,
                 "%.2f",
-                gestureRecognizerHelper.minHandTrackingConfidence
+                gestureHelper.minHandTrackingConfidence
             )
-        fragmentCameraBinding.bottomSheetLayout.presenceThresholdValue.text =
+        cameraBinding.bottomSheetLayout.presenceThresholdValue.text =
             String.format(
                 Locale.US,
                 "%.2f",
-                gestureRecognizerHelper.minHandPresenceConfidence
+                gestureHelper.minHandPresenceConfidence
             )
 
         backgroundExecutor.execute {
-            gestureRecognizerHelper.clearGestureRecognizer()
-            gestureRecognizerHelper.setupGestureRecognizer()
+            gestureHelper.clearGestureRecognizer()
+            gestureHelper.setupGestureRecognizer()
         }
-        fragmentCameraBinding.overlay.clear()
+        cameraBinding.overlay.clear()
     }
 
     // Initialize CameraX, and prepare to bind the camera use cases
@@ -261,7 +296,7 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener(
             {
-                cameraProvider = cameraProviderFuture.get()
+                camProvider = cameraProviderFuture.get()
                 bindCameraUseCases()
             }, ContextCompat.getMainExecutor(requireContext())
         )
@@ -273,19 +308,19 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
 
         // CameraProvider
         val cameraProvider =
-            cameraProvider ?: throw IllegalStateException("Camera initialization failed.")
+            camProvider ?: throw IllegalStateException("Camera initialization failed.")
 
-        val cameraSelector = CameraSelector.Builder().requireLensFacing(cameraFacing).build()
+        val cameraSelector = CameraSelector.Builder().requireLensFacing(camFacing).build()
 
-        // Preview. Only using the 4:3 ratio because this is the closest to our models
+
         preview = Preview.Builder().setTargetAspectRatio(AspectRatio.RATIO_4_3)
-            .setTargetRotation(fragmentCameraBinding.viewFinder.display.rotation)
+            .setTargetRotation(cameraBinding.viewFinder.display.rotation)
             .build()
 
-        // ImageAnalysis. Using RGBA 8888 to match how our models work
-        imageAnalyzer =
+
+        imgAnalyzer =
             ImageAnalysis.Builder().setTargetAspectRatio(AspectRatio.RATIO_4_3)
-                .setTargetRotation(fragmentCameraBinding.viewFinder.display.rotation)
+                .setTargetRotation(cameraBinding.viewFinder.display.rotation)
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
                 .build()
@@ -299,72 +334,72 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
         cameraProvider.unbindAll()
 
         try {
-            // A variable number of use-cases can be passed here -
-            // camera provides access to CameraControl & CameraInfo
-            camera = cameraProvider.bindToLifecycle(
-                this, cameraSelector, preview, imageAnalyzer
+
+            cam = cameraProvider.bindToLifecycle(
+                this, cameraSelector, preview, imgAnalyzer
             )
 
-            // Attach the viewfinder's surface provider to preview use case
-            preview?.setSurfaceProvider(fragmentCameraBinding.viewFinder.surfaceProvider)
+            preview?.setSurfaceProvider(cameraBinding.viewFinder.surfaceProvider)
         } catch (exc: Exception) {
             Log.e(TAG, "Use case binding failed", exc)
         }
     }
 
     private fun recognizeHand(imageProxy: ImageProxy) {
-        gestureRecognizerHelper.recognizeLiveStream(
+        gestureHelper.recognizeLiveStream(
             imageProxy = imageProxy,
         )
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        imageAnalyzer?.targetRotation = fragmentCameraBinding.viewFinder.display.rotation
+        imgAnalyzer?.targetRotation = cameraBinding.viewFinder.display.rotation
     }
 
-    // Update UI after a hand gesture has been recognized. Extracts original
-    // image height/width to scale and place the landmarks properly through
-    // OverlayView. Only one result is expected at a time. If two or more
-    // hands are seen in the camera frame, only one will be processed.
-    override fun onResults(
-        resultBundle: GestureRecognizerHelper.ResultBundle
-    ) {
+    // Update UI after a hand gesture has been recognized
+    override fun onResults(resultBundle: GestureRecognizerHelper.ResultBundle) {
         activity?.runOnUiThread {
-            if (_fragmentCameraBinding != null) {
-                // Show result of recognized gesture
-                val gestureCategories = resultBundle.results.first().gestures()
-                if (gestureCategories.isNotEmpty()) {
-                    gestureRecognizerResultAdapter.updateResults(
-                        gestureCategories.first()
-                    )
-                } else {
-                    gestureRecognizerResultAdapter.updateResults(emptyList())
-                }
-
-                fragmentCameraBinding.bottomSheetLayout.inferenceTimeVal.text =
-                    String.format("%d ms", resultBundle.inferenceTime)
-
-                // Pass necessary information to OverlayView for drawing on the canvas
-                fragmentCameraBinding.overlay.setResults(
-                    resultBundle.results.first(),
-                    resultBundle.inputImageHeight,
-                    resultBundle.inputImageWidth,
-                    RunningMode.LIVE_STREAM
-                )
-
-                fragmentCameraBinding.overlay.invalidate()
+            if (_cameraBinding != null) {
+                updateResultsDisplay(resultBundle)
+                updateInferenceTime(resultBundle)
+                updateOverlay(resultBundle)
             }
         }
     }
 
+    private fun updateResultsDisplay(resultBundle: GestureRecognizerHelper.ResultBundle) {
+        val gestureCategories = resultBundle.results.first().gestures()
+        val results = if (gestureCategories.isNotEmpty()) {
+            gestureCategories.first()
+        } else {
+            emptyList()
+        }
+        gestureAdapter.updateResults(results)
+    }
+
+    private fun updateInferenceTime(resultBundle: GestureRecognizerHelper.ResultBundle) {
+        val formattedTime = String.format("%d ms", resultBundle.inferenceTime)
+        cameraBinding.bottomSheetLayout.inferenceTimeVal.text = formattedTime
+    }
+
+    private fun updateOverlay(resultBundle: GestureRecognizerHelper.ResultBundle) {
+        cameraBinding.overlay.setResults(
+            resultBundle.results.first(),
+            resultBundle.inputImageHeight,
+            resultBundle.inputImageWidth,
+            RunningMode.LIVE_STREAM
+        )
+        cameraBinding.overlay.invalidate()
+    }
+
+
     override fun onError(error: String, errorCode: Int) {
         activity?.runOnUiThread {
             Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
-            gestureRecognizerResultAdapter.updateResults(emptyList())
+            gestureAdapter.updateResults(emptyList())
 
             if (errorCode == GestureRecognizerHelper.GPU_ERROR) {
-                fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.setSelection(
+                cameraBinding.bottomSheetLayout.spinnerDelegate.setSelection(
                     GestureRecognizerHelper.DELEGATE_CPU, false
                 )
             }
