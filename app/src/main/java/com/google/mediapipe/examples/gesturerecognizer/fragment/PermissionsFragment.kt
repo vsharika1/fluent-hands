@@ -1,18 +1,3 @@
-/*
- * Copyright 2022 The TensorFlow Authors. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *             http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.google.mediapipe.examples.gesturerecognizer.fragment
 
 import android.Manifest
@@ -27,66 +12,57 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.google.mediapipe.examples.gesturerecognizer.R
 
-private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
-
 class PermissionsFragment : Fragment() {
 
-    private val requestPermissionLauncher =
-        registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
-        ) { isGranted: Boolean ->
-            if (isGranted) {
-                Toast.makeText(
-                    context,
-                    "Permission request granted",
-                    Toast.LENGTH_LONG
-                ).show()
-                navigateToCamera()
-            } else {
-                Toast.makeText(
-                    context,
-                    "Permission request denied",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+    private val cameraPermissionRequest =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            processCameraPermissionResult(isGranted)
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        when (PackageManager.PERMISSION_GRANTED) {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.CAMERA
-            ) -> {
-                navigateToCamera()
-            }
-            else -> {
-                requestPermissionLauncher.launch(
-                    Manifest.permission.CAMERA
-                )
-            }
+        if (cameraPermissionIsGranted()) {
+            goToCameraFragment()
+        } else {
+            requestCameraPermission()
         }
     }
 
-    private fun navigateToCamera() {
+    private fun cameraPermissionIsGranted(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestCameraPermission() {
+        cameraPermissionRequest.launch(Manifest.permission.CAMERA)
+    }
+
+    private fun processCameraPermissionResult(isGranted: Boolean) {
+        if (isGranted) {
+            displayToast("Camera Permission Granted")
+            goToCameraFragment()
+        } else {
+            displayToast("Camera Permission Denied")
+        }
+    }
+
+    private fun displayToast(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+    }
+
+    private fun goToCameraFragment() {
         lifecycleScope.launchWhenStarted {
-            Navigation.findNavController(
-                requireActivity(),
-                R.id.fragment_container
-            ).navigate(
-                R.id.action_permissions_to_camera
-            )
+            Navigation.findNavController(requireActivity(), R.id.fragment_container)
+                .navigate(R.id.action_permissions_to_camera)
         }
     }
 
     companion object {
-
-        /** Convenience method used to check if all permissions required by this app are granted */
-        fun hasPermissions(context: Context) = PERMISSIONS_REQUIRED.all {
-            ContextCompat.checkSelfPermission(
-                context,
-                it
-            ) == PackageManager.PERMISSION_GRANTED
+        fun checkCameraPermission(context: Context): Boolean {
+            return ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
+                    PackageManager.PERMISSION_GRANTED
         }
     }
 }

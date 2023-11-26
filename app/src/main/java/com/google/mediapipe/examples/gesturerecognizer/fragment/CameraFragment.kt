@@ -75,7 +75,7 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
     }
 
     private fun checkPermissions() {
-        if (!PermissionsFragment.hasPermissions(requireContext())) {
+        if (!PermissionsFragment.checkCameraPermission(requireContext())) {
             navigateToPermissions()
         }
     }
