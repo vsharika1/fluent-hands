@@ -8,13 +8,15 @@ class CircleMovementRecognizer : DynamicGestureRecognizer {
     override fun checkHandMovement(gestureList: List<GestureWrapper>, landmarkIndex: Int): Boolean {
         if (gestureList.size < minLength)
             return false
-        val movements = mutableListOf<Float>()
-        for (i in minLength - 1 downTo 1) {
-            val movement = comparePositions(gestureList[i], gestureList[i - 1], landmarkIndex)
-            Log.i("checkHandMovement", "$movement between indexed $i and ${i - 1}")
-            movements.add(movement)
+        val movementValues = mutableListOf<Float>()
+        var index = minLength - 1
+        while (index >= 1) {
+            val displacement = comparePositions(gestureList[index], gestureList[index - 1], landmarkIndex)
+            Log.i("checkHandMovement", "$displacement between indexed $index and ${index - 1}")
+            movementValues.add(displacement)
+            index--
         }
-        return movements.all { it > movementThreshold }
+        return movementValues.all { it > movementThreshold }
     }
 
     private fun comparePositions(
