@@ -11,13 +11,19 @@ class LeftMovementRecognizer : DynamicGestureRecognizer {
         val movementValues = mutableListOf<Float>()
         var currentIndex = gestureList.size - 1
         while (currentIndex >= 1) {
-            val displacement = comparePositions(gestureList[currentIndex], gestureList[currentIndex - 1], landmarkIndex)
-            Log.i("checkHandMovement", "$displacement between indexed $currentIndex and ${currentIndex - 1}")
+            val displacement = comparePositions(
+                gestureList[currentIndex],
+                gestureList[currentIndex - 1],
+                landmarkIndex
+            )
+            Log.i(
+                "checkHandMovement",
+                "$displacement between indexed $currentIndex and ${currentIndex - 1}"
+            )
             movementValues.add(displacement)
             currentIndex--
         }
-        val isMovementSufficient = movementValues.all { it > movementThreshold }
-        return isMovementSufficient
+        return movementValues.all { it > movementThreshold }
     }
 
 
