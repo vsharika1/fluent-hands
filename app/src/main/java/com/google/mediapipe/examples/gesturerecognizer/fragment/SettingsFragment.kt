@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.RadioButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.google.mediapipe.examples.gesturerecognizer.ProfileActivity
@@ -21,7 +22,6 @@ class SettingsFragment: Fragment() {
     private lateinit var averageScore: TextView
     private lateinit var userProfile: Button
     private lateinit var accountCreated: TextView
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -42,14 +42,33 @@ class SettingsFragment: Fragment() {
         userProfile = view.findViewById(R.id.userProfileButton)
         accountCreated = view.findViewById(R.id.dateCreated)
 
-//        userProfile.setOnClickListener{
-//            val activity = requireActivity()
-//            val intent: Intent = Intent(activity, ProfileActivity::class.java)
-//            startActivity(intent)
-//        }
+        userProfile.setOnClickListener{
+            val activity = requireActivity()
+            val intent: Intent = Intent(activity, ProfileActivity::class.java)
+            startActivity(intent)
+        }
 
+        fetchData()
 
 
         return view
     }
+
+    private fun fetchData() {
+//        Get data from DB then set values
+        var getName = "Daniel"
+        var getEmail = "daniel@sfu.ca"
+        var getAverageScore = 80
+        var getAccountCreated = "Nov 22, 2023 - 21:45 pst"
+
+        helloName.text = "Hello $getName..."
+//        userPicture.setImageURI()
+        name.text = "Name: $getName"
+        email.text = "Email: $getEmail"
+        averageScore.text = "Average Score: $getAverageScore%"
+        accountCreated.text = "Accounted Created: $getAccountCreated"
+
+    }
+
+
 }

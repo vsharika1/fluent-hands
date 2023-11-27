@@ -55,6 +55,19 @@
     <string name="settingsEmail">Email:</string>
     <string name="settingsScore">Average Score:</string>
     <string name="difficultySettings">Set Difficulty:</string>
+    <string name="updateProfile">Update Profile:</string>
+    <string name="profilePhotoText">Profile Photo:</string>
+    <string name="buttonChangeText">Change</string>
+    <string name="nameText">Name:</string>
+    <string name="editNameHint">Your Name..</string>
+    <string name="emailText">Email:</string>
+    <string name="editEmailHint">Your Email..</string>
+    <string name="genderText">Gender:</string>
+    <string name="button_female">Female</string>
+    <string name="button_male">Male</string>
+    <string name="buttonSaveText">Save</string>
+    <string name="buttonCancelText">Cancel</string>
+    <string name="takePicture">Capture</string>
 
     <string-array name="delegate_spinner_titles">
         <item>CPU</item>
