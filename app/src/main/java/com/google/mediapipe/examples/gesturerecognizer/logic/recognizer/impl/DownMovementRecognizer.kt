@@ -9,14 +9,17 @@ class DownMovementRecognizer : DynamicGestureRecognizer {
     override fun checkHandMovement(gestureList: List<GestureWrapper>, landmarkIndex: Int): Boolean {
         if (gestureList.size < minLength)
             return false
-        val movements = mutableListOf<Float>()
-        for (i in minLength - 1 downTo 1) {
-            val movement = comparePositions(gestureList[i], gestureList[i - 1], landmarkIndex)
-            Log.i("checkHandMovement", "$movement between indexed $i and ${i - 1}")
-            movements.add(movement)
+        val movementList = mutableListOf<Float>()
+        var currentIndex = minLength - 1
+        while (currentIndex >= 1) {
+            val currentMovement = comparePositions(gestureList[currentIndex], gestureList[currentIndex - 1], landmarkIndex)
+            Log.i("checkHandMovement", "$currentMovement between indexed $currentIndex and ${currentIndex - 1}")
+            movementList.add(currentMovement)
+            currentIndex--
         }
-        return movements.all { it > movementThreshold }
+        return movementList.all { it > movementThreshold }
     }
+
 
     private fun comparePositions(
         first: GestureWrapper, second: GestureWrapper, landmarkIndex: Int
