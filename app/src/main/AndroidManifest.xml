@@ -51,6 +51,10 @@
                 android:name="android.notch_support"
                 android:value="true" />
         </activity>
+        <activity android:name=".ProfileActivity"
+            android:exported="false"/>
+        <activity android:name=".CameraActivity">
+        </activity>
     </application>
 
 </manifest>

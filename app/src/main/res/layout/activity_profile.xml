@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/profileInformationTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/updateProfile"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textProfilePhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/profilePhotoText"
+            android:layout_margin="5dp"/>
+        <ImageView
+            android:id="@+id/profilePhoto"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:layout_margin="5dp"
+            android:layout_weight="0"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center">
+
+            <Button
+                android:id="@+id/buttonChangePhoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/buttonChangeText"
+                android:layout_margin="5dp"
+                android:layout_marginLeft="100dp"/>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/nameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:text="@string/nameText"
+        android:layout_margin="5dp"/>
+
+    <EditText
+        android:id="@+id/editName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/editNameHint"
+        android:layout_margin="5dp"/>
+
+    <TextView
+        android:id="@+id/emailText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:text="@string/emailText"
+        android:layout_margin="5dp"/>
+
+    <EditText
+        android:id="@+id/editEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/editEmailHint"
+        android:layout_margin="5dp"/>
+
+
+    <LinearLayout
+        android:layout_marginTop="300dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/buttonSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/buttonSaveText"
+            android:layout_margin="5dp"
+            android:layout_weight="1" />
+        <Button
+            android:id="@+id/buttonCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/buttonCancelText"
+            android:layout_margin="5dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+</LinearLayout>
