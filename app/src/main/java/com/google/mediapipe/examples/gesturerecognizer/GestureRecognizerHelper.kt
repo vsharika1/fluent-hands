@@ -173,7 +173,7 @@ class GestureRecognizerHelper(
         val finishTimeMs = SystemClock.uptimeMillis()
         val inferenceTime = finishTimeMs - result.timestampMs()
         if (!result.gestures().isNullOrEmpty()) {
-            ContextHolder.addGestureResult(result)
+            ContextHolder.processGestureResult(result)
         }
 
         gestureRecognizerListener?.onResults(
