@@ -10,9 +10,13 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.mediapipe.examples.fluenthands.ProfileActivity
 import com.google.mediapipe.examples.fluenthands.R
 import com.google.mediapipe.examples.fluenthands.SignInActivity
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class SettingsFragment : Fragment() {
     private lateinit var helloName: TextView
@@ -64,16 +68,29 @@ class SettingsFragment : Fragment() {
 
     private fun fetchData() {
 //        Get data from DB then set values
-        var getName = "Daniel"
-        var getEmail = "daniel@sfu.ca"
-        var getAverageScore = 80
-        var getAccountCreated = "Nov 22, 2023 - 21:45 pst"
+        val user: FirebaseUser? = firebaseAuth.currentUser
+        if (user != null) {
+            var getName = user.displayName
+            var getEmail = user.email
+            var getAverageScore = 80 // TO-DO
+            var getAccountCreated = getAccountCreationDate(user)
 
-        helloName.text = "Hello $getName..."
+            helloName.text = "Hello $getName..."
 //        userPicture.setImageURI()
-        name.text = "Name: $getName"
-        email.text = "Email: $getEmail"
-        averageScore.text = "Average Score: $getAverageScore%"
-        accountCreated.text = "Accounted Created: $getAccountCreated"
+            name.text = "Name: $getName"
+            email.text = "Email: $getEmail"
+            averageScore.text = "Average Score: $getAverageScore%"
+            accountCreated.text = "Accounted Created: $getAccountCreated"
+        }
+        }
+
+    private fun getAccountCreationDate(user: FirebaseUser): String {
+        val creationTimestamp = user.metadata?.creationTimestamp ?: return "N/A"
+
+        val sdf = SimpleDateFormat("MMM dd, yyyy - HH:mm z", Locale.getDefault())
+        val creationDate = Date(creationTimestamp)
+        return sdf.format(creationDate)
     }
+
+
 }
