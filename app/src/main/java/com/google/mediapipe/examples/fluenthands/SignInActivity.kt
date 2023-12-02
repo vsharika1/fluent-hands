@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.FirebaseApp
-import com.google.mediapipe.examples.fluenthands.databinding.ActivitySignInBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.mediapipe.examples.fluenthands.databinding.ActivitySignInBinding
 
 class SignInActivity : AppCompatActivity() {
 

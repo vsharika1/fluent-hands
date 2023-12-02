@@ -17,6 +17,8 @@ package com.google.mediapipe.examples.fluenthands
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -28,6 +30,7 @@ import com.google.mediapipe.examples.fluenthands.logic.ContextHolder
 class MainActivity : AppCompatActivity() {
     private lateinit var activityMainBinding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
+    private lateinit var backButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +42,11 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.navigation.setupWithNavController(navController)
         activityMainBinding.navigation.setOnNavigationItemReselectedListener {
             // ignore the reselection
+        }
+
+        val backButton = findViewById<ImageButton>(R.id.back_button)
+        backButton.setOnClickListener {
+            finish()
         }
     }
 
