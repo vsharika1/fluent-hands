@@ -7,32 +7,32 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.google.mediapipe.examples.gesturerecognizer.ui.home.HomeFragment"
+        android:name="com.google.mediapipe.examples.fluenthands.ui.home.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigation_reults"
-        android:name="com.google.mediapipe.examples.gesturerecognizer.ui.results.ResultsFragment"
+        android:name="com.google.mediapipe.examples.fluenthands.ui.results.ResultsFragment"
         android:label="@string/title_results"
         tools:layout="@layout/fragment_results" />
 
     <fragment
         android:id="@+id/navigation_profile"
-        android:name="com.google.mediapipe.examples.gesturerecognizer.ui.profile.ProfileFragment"
+        android:name="com.google.mediapipe.examples.fluenthands.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
         tools:layout="@layout/fragment_profile" />
 
 
     <fragment
         android:id="@+id/navigation_settings"
-        android:name="com.google.mediapipe.examples.gesturerecognizer.ui.settings.SettingsFragment"
+        android:name="com.google.mediapipe.examples.fluenthands.ui.settings.SettingsFragment"
         android:label="@string/title_settings"
         tools:layout="@layout/fragment_settings2" />
 
     <fragment
         android:id="@+id/navigation_help"
-        android:name="com.google.mediapipe.examples.gesturerecognizer.ui.help.HelpFragment"
+        android:name="com.google.mediapipe.examples.fluenthands.ui.help.HelpFragment"
         android:label="@string/title_help"
         tools:layout="@layout/fragment_help" />
 </navigation>
