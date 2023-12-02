@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "46113695580",
+    "project_id": "fluenthands-e0d5c",
+    "storage_bucket": "fluenthands-e0d5c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:46113695580:android:7c541e03d7df2f0dd18399",
+        "android_client_info": {
+          "package_name": "com.google.mediapipe.examples.gesturerecognizer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBUA5Lge0P4PsDDOXWlHtADX95eqRAnIk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
