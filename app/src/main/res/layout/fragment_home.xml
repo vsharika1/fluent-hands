@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_vertical"
+    android:padding="16dp">
+
+    <!-- Card 1 -->
+    <FrameLayout
+        android:id="@+id/card1"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/card_background">
+
+        <ImageView
+            android:id="@+id/image1"
+            android:layout_width="match_parent"
+            android:layout_height="170dp"
+            android:layout_weight="0.7"
+            android:scaleType="fitXY"
+            android:src="@drawable/hand_gesture" />
+
+        <TextView
+            android:id="@+id/text1"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_weight="0.3"
+            android:gravity="center"
+            android:text="Gesture Recognizer"
+            android:textSize="18sp"
+            android:layout_gravity="bottom" />
+    </FrameLayout>
+
+    <!-- Card 2 -->
+    <FrameLayout
+        android:id="@+id/card2"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/card_background">
+
+        <ImageView
+            android:id="@+id/image2"
+            android:layout_width="match_parent"
+            android:layout_height="170dp"
+            android:layout_weight="0.7"
+            android:scaleType="centerCrop"
+            android:src="@drawable/takethequiz" />
+
+        <TextView
+            android:id="@+id/text2"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_weight="0.3"
+            android:gravity="center"
+            android:text="Take a Quiz"
+            android:textSize="18sp"
+            android:layout_gravity="bottom" />
+    </FrameLayout>
+
+    <!-- Card 3 -->
+    <FrameLayout
+        android:id="@+id/card3"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/card_background">
+
+        <ImageView
+            android:id="@+id/image3"
+            android:layout_width="match_parent"
+            android:layout_height="170dp"
+            android:layout_weight="0.7"
+            android:scaleType="centerCrop"
+            android:src="@drawable/learn" />
+
+        <TextView
+            android:id="@+id/text3"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_weight="0.3"
+            android:gravity="center"
+            android:text="Start Learning"
+            android:textSize="18sp"
+            android:layout_gravity="bottom" />
+    </FrameLayout>
+
+</LinearLayout>

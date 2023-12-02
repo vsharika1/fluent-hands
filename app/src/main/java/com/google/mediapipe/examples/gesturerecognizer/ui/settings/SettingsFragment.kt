@@ -1,20 +1,19 @@
-package com.google.mediapipe.examples.gesturerecognizer.fragment
+package com.google.mediapipe.examples.gesturerecognizer.ui.settings
 
 import android.content.Intent
+import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.RadioButton
 import android.widget.TextView
-import androidx.fragment.app.Fragment
 import com.google.mediapipe.examples.gesturerecognizer.ProfileActivity
 import com.google.mediapipe.examples.gesturerecognizer.R
 
-class SettingsFragment: Fragment() {
-
+class SettingsFragment : Fragment() {
     private lateinit var helloName: TextView
     private lateinit var name: TextView
     private lateinit var userPicture: ImageView
@@ -26,7 +25,7 @@ class SettingsFragment: Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        var view = inflater.inflate(R.layout.fragment_settings, container, false)
+        var view = inflater.inflate(R.layout.fragment_settings2, container, false)
 
 //        INSERT FIREBASE CODE TO FETCH DATA
 //        **
@@ -67,8 +66,5 @@ class SettingsFragment: Fragment() {
         email.text = "Email: $getEmail"
         averageScore.text = "Average Score: $getAverageScore%"
         accountCreated.text = "Accounted Created: $getAccountCreated"
-
     }
-
-
 }
