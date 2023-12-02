@@ -18,12 +18,11 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'de.undercouch.download'
-    id 'com.google.gms.google-services'
 }
 
 android {
     namespace 'com.google.mediapipe.examples.gesturerecognizer'
-    compileSdk 32
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.google.mediapipe.examples.gesturerecognizer"
@@ -33,6 +32,8 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
@@ -61,15 +62,26 @@ apply from: 'download_tasks.gradle'
 
 dependencies {
 
+    configurations.configureEach {
+        resolutionStrategy {
+            force "org.jetbrains.kotlin:kotlin-stdlib:1.7.10"
+            // force other Kotlin libraries if necessary
+        }
+    }
+
     // Kotlin lang
     implementation 'androidx.core:core-ktx:1.8.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.7.10"
+
 
     // App compat and UI things
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.fragment:fragment-ktx:1.5.4'
-//    implementation 'com.google.firebase:firebase-auth:21.0.3'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     // Navigation library
     def nav_version = "2.5.3"
@@ -101,8 +113,4 @@ dependencies {
 
     // Mediapipe Library
     implementation 'com.google.mediapipe:tasks-vision:0.1.0-alpha-5'
-
-    //firebase
-    implementation 'com.google.firebase:firebase-database:20.0.3'
-    implementation 'com.google.firebase:firebase-auth-ktx:21.0.1'
 }
