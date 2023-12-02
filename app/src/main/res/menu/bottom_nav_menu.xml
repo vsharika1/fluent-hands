@@ -12,14 +12,9 @@
         android:title="@string/title_results" />
 
     <item
-        android:id="@+id/navigation_profile"
+        android:id="@+id/navigation_settings"
         android:icon="@drawable/account_circle_24px"
         android:title="@string/title_profile" />
-
-    <item
-        android:id="@+id/navigation_settings"
-        android:icon="@drawable/settings_24px"
-        android:title="@string/title_settings" />
 
     <item
         android:id="@+id/navigation_help"

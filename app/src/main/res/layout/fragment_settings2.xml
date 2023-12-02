@@ -5,43 +5,39 @@
     android:layout_height="match_parent"
     tools:context=".ui.settings.SettingsFragment">
 
-    <!-- Placeholder for AppBarLayout -->
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <!-- Scrollable content starts here -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize"> <!-- Ensures content starts below the app bar -->
+        android:layout_marginTop="?attr/actionBarSize"
+        android:padding="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="8dp">
 
-            <!-- Your existing LinearLayout content starts here -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="10dp">
 
                 <TextView
                     android:id="@+id/helloSettings"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginBottom="20dp"
+                    android:layout_weight="1"
                     android:text="Hello Daniel..."
-                    android:textSize="22sp" />
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
 
                 <ImageView
                     android:id="@+id/profilePhoto"
-                    android:layout_width="140dp"
-                    android:layout_height="140dp"
-                    android:layout_margin="5dp"
-                    android:layout_weight="0" />
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/ic_plus" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -75,8 +71,8 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#000000" />
-
+                android:layout_marginVertical="8dp"
+                android:background="#DDDDDD" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -111,7 +107,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#000000" />
+                android:background="#DDDDDD" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -181,12 +177,13 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="20dp"
-                android:background="#000000" />
+                android:background="#DDDDDD" />
 
             <TextView
                 android:id="@+id/dateCreated"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingTop="20dp"
                 android:text="Date Account Created: Nov 22, 2023 - 21:45 pst" />
 
             <Button
@@ -200,5 +197,4 @@
 
         </LinearLayout>
     </ScrollView>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

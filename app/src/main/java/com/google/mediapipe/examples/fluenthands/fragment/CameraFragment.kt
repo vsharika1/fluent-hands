@@ -33,13 +33,13 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.mediapipe.examples.fluenthands.GestureRecognizerHelper
 import com.google.mediapipe.examples.fluenthands.MainViewModel
-import com.google.mediapipe.examples.fluenthands.R
 import com.google.mediapipe.examples.fluenthands.databinding.FragmentCameraBinding
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import com.google.mediapipe.examples.fluenthands.R
 
 class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerListener {
 
