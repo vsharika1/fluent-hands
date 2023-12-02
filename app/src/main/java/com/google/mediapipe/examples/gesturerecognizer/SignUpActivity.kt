@@ -15,7 +15,7 @@ class SignUpActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        FirebaseApp.initializeApp(this);
+        FirebaseApp.initializeApp(this)
         binding = ActivitySignUpBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
