@@ -32,14 +32,14 @@ import com.google.mediapipe.tasks.vision.gesturerecognizer.GestureRecognizer
 import com.google.mediapipe.tasks.vision.gesturerecognizer.GestureRecognizerResult
 
 class GestureRecognizerHelper(
-    var minHandDetectionConfidence: Float = DEFAULT_HAND_DETECTION_CONFIDENCE,
-    var minHandTrackingConfidence: Float = DEFAULT_HAND_TRACKING_CONFIDENCE,
+    var detectionConfidence: Float = DEFAULT_HAND_DETECTION_CONFIDENCE,
+    var trackingConfidence: Float = DEFAULT_HAND_TRACKING_CONFIDENCE,
     var minHandPresenceConfidence: Float = DEFAULT_HAND_PRESENCE_CONFIDENCE,
-    var numHands: Int = DEFAULT_HAND_NUMBER,
+    var handCount: Int = DEFAULT_HAND_NUMBER,
     var currentDelegate: Int = DELEGATE_CPU,
-    var runningMode: RunningMode = RunningMode.IMAGE,
+    var mode: RunningMode = RunningMode.IMAGE,
     val context: Context,
-    val gestureRecognizerListener: GestureRecognizerListener? = null,
+    val gestureListener: GestureRecognizerListener? = null,
     var isFrontCamera: Boolean = true
 ) {
 
@@ -61,100 +61,87 @@ class GestureRecognizerHelper(
     // that are created on the main thread and used on a background thread, but
     // the GPU delegate needs to be used on the thread that initialized the recognizer
     fun setupGestureRecognizer() {
-        // Set general recognition options, including number of used threads
-        val baseOptionBuilder = BaseOptions.builder()
-
-        // Use the specified hardware for running the model. Default to CPU
-        when (currentDelegate) {
-            DELEGATE_CPU -> {
-                baseOptionBuilder.setDelegate(Delegate.CPU)
-            }
-            DELEGATE_GPU -> {
-                baseOptionBuilder.setDelegate(Delegate.GPU)
-            }
-        }
-
-        baseOptionBuilder.setModelAssetPath(MP_RECOGNIZER_TASK)
-
         try {
-            val baseOptions = baseOptionBuilder.build()
-            val optionsBuilder =
-                GestureRecognizer.GestureRecognizerOptions.builder()
-                    .setBaseOptions(baseOptions)
-                    .setNumHands(numHands)
-                    .setMinHandDetectionConfidence(minHandDetectionConfidence)
-                    .setMinTrackingConfidence(minHandTrackingConfidence)
-                    .setMinHandPresenceConfidence(minHandPresenceConfidence)
-                    .setRunningMode(runningMode)
+            val baseOptions = configureBaseOptions()
+            val gestureOptions = buildGestureOptions(baseOptions)
 
-            if (runningMode == RunningMode.LIVE_STREAM) {
-                optionsBuilder
-                    .setResultListener(this::returnLivestreamResult)
-                    .setErrorListener(this::returnLivestreamError)
-            }
-            val options = optionsBuilder.build()
-            gestureRecognizer = GestureRecognizer.createFromOptions(context, options)
-        } catch (e: IllegalStateException) {
-            gestureRecognizerListener?.onError(
-                "Gesture recognizer failed to initialize. See error logs for " + "details"
-            )
-            Log.e(
-                TAG,
-                "MP Task Vision failed to load the task with error: " + e.message
-            )
-        } catch (e: RuntimeException) {
-            gestureRecognizerListener?.onError(
-                "Gesture recognizer failed to initialize. See error logs for " + "details",
-                GPU_ERROR
-            )
-            Log.e(
-                TAG,
-                "MP Task Vision failed to load the task with error: " + e.message
-            )
+            gestureRecognizer = GestureRecognizer.createFromOptions(context, gestureOptions)
+        } catch (e: Exception) {
+            handleGestureSetupException(e)
         }
     }
 
-    // Convert the ImageProxy to MP Image and feed it to GestureRecognizer.
-    fun recognizeLiveStream(
-        imageProxy: ImageProxy,
-    ) {
-        val frameTime = SystemClock.uptimeMillis()
-
-        // Copy out RGB bits from the frame to a bitmap buffer
-        val bitmapBuffer = Bitmap.createBitmap(
-            imageProxy.width, imageProxy.height, Bitmap.Config.ARGB_8888
-        )
-        imageProxy.use { bitmapBuffer.copyPixelsFromBuffer(imageProxy.planes[0].buffer) }
-        imageProxy.close()
-
-        val matrix = Matrix().apply {
-            // Rotate the frame received from the camera to be in the same direction as it'll be shown
-            postRotate(imageProxy.imageInfo.rotationDegrees.toFloat())
-
-            val rotation = if (isFrontCamera) -1f else 1f
-            postScale(
-                rotation, 1f, imageProxy.width.toFloat(), imageProxy.height.toFloat()
-            )
+    private fun configureBaseOptions(): BaseOptions {
+        val baseOptionBuilder = BaseOptions.builder()
+        baseOptionBuilder.apply {
+            setModelAssetPath(MP_RECOGNIZER_TASK)
+            setDelegate(getDelegateBasedOnType())
         }
+        return baseOptionBuilder.build()
+    }
 
-        // Rotate bitmap to match what our model expects
-        val rotatedBitmap = Bitmap.createBitmap(
-            bitmapBuffer,
-            0,
-            0,
-            bitmapBuffer.width,
-            bitmapBuffer.height,
-            matrix,
-            true
-        )
+    private fun getDelegateBasedOnType(): Delegate = when (currentDelegate) {
+        DELEGATE_CPU -> Delegate.CPU
+        DELEGATE_GPU -> Delegate.GPU
+        else -> Delegate.CPU
+    }
 
-        // Convert the input Bitmap object to an MPImage object to run inference
+    private fun buildGestureOptions(baseOptions: BaseOptions): GestureRecognizer.GestureRecognizerOptions {
+        val optionsBuilder =
+            GestureRecognizer.GestureRecognizerOptions.builder()
+                .setBaseOptions(baseOptions)
+                .setNumHands(handCount)
+                .setMinHandDetectionConfidence(detectionConfidence)
+                .setMinTrackingConfidence(trackingConfidence)
+                .setMinHandPresenceConfidence(minHandPresenceConfidence)
+                .setRunningMode(mode)
+
+        if (mode == RunningMode.LIVE_STREAM) {
+            optionsBuilder
+                .setResultListener(this::returnLivestreamResult)
+                .setErrorListener(this::returnLivestreamError)
+        }
+        return optionsBuilder.build()
+    }
+
+    private fun handleGestureSetupException(e: Exception) {
+        val errorMessage = "Gesture recognizer failed to initialize. See error logs for details"
+        // Assuming a default error code, like -1, to represent an unknown or non-runtime error.
+        val errorCode = if (e is RuntimeException) GPU_ERROR else -1
+        gestureListener?.onError(errorMessage, errorCode)
+        Log.e(TAG, "MP Task Vision failed to load the task with error: ${e.message}")
+    }
+
+    // Convert the ImageProxy to MP Image and feed it to GestureRecognizer.
+    fun recognizeLiveStream(imageProxy: ImageProxy) {
+        val frameTime = SystemClock.uptimeMillis()
+        val bitmapBuffer = createBitmapFromImageProxy(imageProxy)
+        val rotatedBitmap = rotateBitmap(bitmapBuffer, imageProxy)
         val mpImage = BitmapImageBuilder(rotatedBitmap).build()
 
         recognizeAsync(mpImage, frameTime)
     }
 
-    // Run hand gesture recognition using MediaPipe Gesture Recognition API
+    private fun createBitmapFromImageProxy(imageProxy: ImageProxy): Bitmap {
+        return Bitmap.createBitmap(
+            imageProxy.width, imageProxy.height, Bitmap.Config.ARGB_8888
+        ).also { bitmap ->
+            imageProxy.use { bitmap.copyPixelsFromBuffer(imageProxy.planes[0].buffer) }
+            imageProxy.close()
+        }
+    }
+
+    private fun rotateBitmap(bitmap: Bitmap, imageProxy: ImageProxy): Bitmap {
+        val matrix = Matrix().apply {
+            postRotate(imageProxy.imageInfo.rotationDegrees.toFloat())
+            val rotation = if (isFrontCamera) -1f else 1f
+            postScale(rotation, 1f, imageProxy.width.toFloat(), imageProxy.height.toFloat())
+        }
+        return Bitmap.createBitmap(
+            bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true
+        )
+    }
+
     @VisibleForTesting
     fun recognizeAsync(mpImage: MPImage, frameTime: Long) {
         gestureRecognizer?.recognizeAsync(mpImage, frameTime)
@@ -166,7 +153,6 @@ class GestureRecognizerHelper(
         return gestureRecognizer == null
     }
 
-    // Return the recognition result to the GestureRecognizerHelper's caller
     private fun returnLivestreamResult(
         result: GestureRecognizerResult, input: MPImage
     ) {
@@ -176,17 +162,15 @@ class GestureRecognizerHelper(
             ContextHolder.processGestureResult(result)
         }
 
-        gestureRecognizerListener?.onResults(
+        gestureListener?.onResults(
             ResultBundle(
                 listOf(result), inferenceTime, input.height, input.width
             )
         )
     }
 
-    // Return errors thrown during recognition to this GestureRecognizerHelper's
-    // caller
     private fun returnLivestreamError(error: RuntimeException) {
-        gestureRecognizerListener?.onError(
+        gestureListener?.onError(
             error.message ?: "An unknown error has occurred"
         )
     }
@@ -201,19 +185,19 @@ class GestureRecognizerHelper(
         const val DEFAULT_HAND_TRACKING_CONFIDENCE = 0.5F
         const val DEFAULT_HAND_PRESENCE_CONFIDENCE = 0.5F
         const val DEFAULT_HAND_NUMBER = 2
-        const val OTHER_ERROR = 0
+        const val ERROR = 0
         const val GPU_ERROR = 1
     }
 
     data class ResultBundle(
         val results: List<GestureRecognizerResult>,
         val inferenceTime: Long,
-        val inputImageHeight: Int,
-        val inputImageWidth: Int,
+        val imageHeight: Int,
+        val imageWidth: Int,
     )
 
     interface GestureRecognizerListener {
-        fun onError(error: String, errorCode: Int = OTHER_ERROR)
+        fun onError(error: String, errorCode: Int = ERROR)
         fun onResults(resultBundle: ResultBundle)
     }
 }

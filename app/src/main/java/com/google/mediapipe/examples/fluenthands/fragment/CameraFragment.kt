@@ -102,8 +102,8 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
 
     private fun saveGestureSettings() {
         if (this::gestureHelper.isInitialized) {
-            viewModel.setMinHandDetectionConfidence(gestureHelper.minHandDetectionConfidence)
-            viewModel.setMinHandTrackingConfidence(gestureHelper.minHandTrackingConfidence)
+            viewModel.setMinHandDetectionConfidence(gestureHelper.detectionConfidence)
+            viewModel.setMinHandTrackingConfidence(gestureHelper.trackingConfidence)
             viewModel.setMinHandPresenceConfidence(gestureHelper.minHandPresenceConfidence)
             viewModel.setDelegate(gestureHelper.currentDelegate)
         }
@@ -171,12 +171,12 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
     private fun createGestureRecognizerHelper() {
         gestureHelper = GestureRecognizerHelper(
             context = requireContext(),
-            runningMode = RunningMode.LIVE_STREAM,
-            minHandDetectionConfidence = viewModel.currentMinHandDetectionConfidence,
-            minHandTrackingConfidence = viewModel.currentMinHandTrackingConfidence,
+            mode = RunningMode.LIVE_STREAM,
+            detectionConfidence = viewModel.currentMinHandDetectionConfidence,
+            trackingConfidence = viewModel.currentMinHandTrackingConfidence,
             minHandPresenceConfidence = viewModel.currentMinHandPresenceConfidence,
             currentDelegate = viewModel.currentDelegate,
-            gestureRecognizerListener = this
+            gestureListener = this
         )
     }
 
@@ -206,16 +206,16 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
     private fun setupThresholdAdjustmentButtons() {
         with(cameraBinding.bottomSheetLayout) {
             setupAdjustmentButton(detectionThresholdMinus, 0.2f, 0.1f, true) {
-                gestureHelper.minHandDetectionConfidence -= it
+                gestureHelper.detectionConfidence -= it
             }
             setupAdjustmentButton(detectionThresholdPlus, 0.8f, 0.1f, false) {
-                gestureHelper.minHandDetectionConfidence += it
+                gestureHelper.detectionConfidence += it
             }
             setupAdjustmentButton(trackingThresholdMinus, 0.2f, 0.1f, true) {
-                gestureHelper.minHandTrackingConfidence -= it
+                gestureHelper.trackingConfidence -= it
             }
             setupAdjustmentButton(trackingThresholdPlus, 0.8f, 0.1f, false) {
-                gestureHelper.minHandTrackingConfidence += it
+                gestureHelper.trackingConfidence += it
             }
             setupAdjustmentButton(presenceThresholdMinus, 0.2f, 0.1f, true) {
                 gestureHelper.minHandPresenceConfidence -= it
@@ -235,9 +235,9 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
     ) {
         button.setOnClickListener {
             val currentConfidence = if (isDecrease) {
-                minOf(threshold + increment, gestureHelper.minHandDetectionConfidence)
+                minOf(threshold + increment, gestureHelper.detectionConfidence)
             } else {
-                maxOf(threshold - increment, gestureHelper.minHandDetectionConfidence)
+                maxOf(threshold - increment, gestureHelper.detectionConfidence)
             }
             adjustment(if (isDecrease) -increment else increment)
             updateControlsUi()
@@ -269,13 +269,13 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
             String.format(
                 Locale.US,
                 "%.2f",
-                gestureHelper.minHandDetectionConfidence
+                gestureHelper.detectionConfidence
             )
         cameraBinding.bottomSheetLayout.trackingThresholdValue.text =
             String.format(
                 Locale.US,
                 "%.2f",
-                gestureHelper.minHandTrackingConfidence
+                gestureHelper.trackingConfidence
             )
         cameraBinding.bottomSheetLayout.presenceThresholdValue.text =
             String.format(
@@ -385,8 +385,8 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
     private fun updateOverlay(resultBundle: GestureRecognizerHelper.ResultBundle) {
         cameraBinding.overlay.setResults(
             resultBundle.results.first(),
-            resultBundle.inputImageHeight,
-            resultBundle.inputImageWidth,
+            resultBundle.imageHeight,
+            resultBundle.imageWidth,
             RunningMode.LIVE_STREAM
         )
         cameraBinding.overlay.invalidate()
