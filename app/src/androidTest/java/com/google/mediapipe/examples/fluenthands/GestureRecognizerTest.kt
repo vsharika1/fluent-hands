@@ -79,8 +79,8 @@ class GestureRecognizerTest {
         var recognizerResult: GestureRecognizerHelper.ResultBundle? = null
         val gestureRecognizerHelper =
             GestureRecognizerHelper(context = ApplicationProvider.getApplicationContext(),
-                runningMode = RunningMode.LIVE_STREAM,
-                gestureRecognizerListener = object :
+                mode = RunningMode.LIVE_STREAM,
+                gestureListener = object :
                     GestureRecognizerHelper.GestureRecognizerListener {
                     override fun onError(error: String, errorCode: Int) {
                         // Print out the error
