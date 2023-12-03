@@ -20,6 +20,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
@@ -56,6 +57,14 @@ class MainActivity : AppCompatActivity() {
         val backButton = findViewById<ImageButton>(R.id.back_button)
         backButton.setOnClickListener {
             finish()
+        }
+
+        findViewById<Button>(R.id.yesButton).setOnClickListener {
+            yesButtonClick()
+        }
+
+        findViewById<Button>(R.id.noButton).setOnClickListener {
+            noButtonClick()
         }
 
         val difficulty = Difficulty.EASY // Replace with the actual difficulty level
@@ -102,6 +111,42 @@ class MainActivity : AppCompatActivity() {
         val textLabel = findViewById<TextView>(R.id.textLabel)
         textLabel.text = textLabel.text.toString() + " "
         ContextHolder.currentWord = textLabel.text.toString() + " "
+    }
+
+    fun yesButtonClick(){
+        // Get the current word displayed
+        val currentWord = findViewById<TextView>(R.id.wordTextView).text.toString()
+
+        // Check if the entered word matches the current random word
+        if (currentWord.equals(ContextHolder.currentWord, ignoreCase = true)) {
+            // Award points
+            awardPoints(10)
+
+            // Display a new random word
+            val difficulty = Difficulty.EASY // Replace with the actual difficulty level
+            displayRandomWord(difficulty)
+        } else {
+            // Handle incorrect answer (you can replace this with your desired logic)
+            // For example, decrement the score or show a hint
+            // Here, we're just displaying a toast message
+            Toast.makeText(this,"Incorrect Answer! Try again.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun noButtonClick(){
+        val difficulty = Difficulty.EASY // Replace with the actual difficulty level
+        displayRandomWord(difficulty)
+    }
+
+    private fun awardPoints(points: Int) {
+        // Implement your scoring logic here
+        // For example, update the user's score or perform other actions
+        // In this example, we're just displaying a toast message
+        Toast.makeText(this,"You earned $points points!", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun onSubmit(){
+        TODO()
     }
 
     private fun displayRandomWord(difficulty: Difficulty) {
