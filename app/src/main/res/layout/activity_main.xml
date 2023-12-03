@@ -46,6 +46,14 @@
                 android:src="@drawable/fluenthands" />
         </androidx.appcompat.widget.Toolbar>
 
+        <TextView
+            android:id="@+id/wordTextView"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Your Random Word"
+            android:gravity="center"
+            android:layout_below="@id/navigation"/>
+
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/navigation"
             android:layout_width="match_parent"
