@@ -32,10 +32,6 @@ class SettingsFragment : Fragment() {
 
     private lateinit var firebaseAuth: FirebaseAuth
 
-    companion object {
-        private const val PROFILE_ACTIVITY_REQUEST_CODE = 1001
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
@@ -61,17 +57,16 @@ class SettingsFragment : Fragment() {
 
         }
 
+        fetchData()
+
         userProfile.setOnClickListener{
             val activity = requireActivity()
             val intent: Intent = Intent(activity, ProfileActivity::class.java)
             startActivity(intent)
         }
 
-        fetchData()
-
         return view
     }
-
     override fun onResume() {
         super.onResume()
         fetchData()
@@ -85,9 +80,15 @@ class SettingsFragment : Fragment() {
             var getAverageScore = 80 // TO-DO
             var getAccountCreated = getAccountCreationDate(user)
 
-            helloName.text = "Hello $getName..."
+            user.reload().addOnCompleteListener { reloadTask ->
+                if (reloadTask.isSuccessful) {
+                    // Update UI with the refreshed user information
+                    helloName.text = "Hello ${user.displayName}..."
+                    name.text = "Name: ${user.displayName}"
+                    email.text = "Email: $getEmail"
+                }
+            }
 //        userPicture.setImageURI()
-            name.text = "Name: $getName"
             email.text = "Email: $getEmail"
             averageScore.text = "Average Score: $getAverageScore%"
             accountCreated.text = "Accounted Created: $getAccountCreated"
