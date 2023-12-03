@@ -27,6 +27,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/back_button_description" />
             <ImageView
+                android:id="@+id/image_placeholder"
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
                 android:src="@drawable/fluenthands" />
@@ -36,9 +37,12 @@
         <ImageView
             android:id="@+id/camera_overlay"
             android:layout_width="wrap_content"
-            android:layout_height="100dp"
+            android:layout_height="300dp"
             android:layout_below="@id/toolbar"
             android:src="@drawable/fluenthands" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"/>
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment_container"
