@@ -1,31 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/Theme.AppCompat"
-    tools:context=".LearningPage">
+    android:background="@android:color/transparent">
 
-    <androidx.camera.view.PreviewView
-        android:id="@+id/viewFinderLearning"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_alignParentTop="true"
+            android:background="@color/mp_color_primary">
+            <!-- Back Button added here -->
+            <ImageButton
+                android:id="@+id/back_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/arrow_back_ios_24px"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/back_button_description" />
+            <ImageView
+                android:layout_width="320dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/fluenthands" />
+        </androidx.appcompat.widget.Toolbar>
 
-    </androidx.camera.view.PreviewView>
+        <!-- Modified ImageView with increased height -->
+        <ImageView
+            android:id="@+id/camera_overlay"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:layout_below="@id/toolbar"
+            android:src="@drawable/fluenthands" />
 
-    <Button
-        android:id="@+id/cameraCaptureButton"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginBottom="50dp"
-        android:elevation="2dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:text="@string/takePicture"/>
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragment_container"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/camera_overlay"
+            android:background="@android:color/transparent"
+            android:keepScreenOn="true"
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/nav_graph"
+            tools:context=".MainActivity" />
 
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fragment_container"
+            app:itemIconTint="@color/bg_nav_item"
+            app:itemTextColor="@color/bg_nav_item"
+            app:menu="@menu/learn_bottom_nav" />
 
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/navigation"
+            android:background="@android:color/darker_gray" />
+    </RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
