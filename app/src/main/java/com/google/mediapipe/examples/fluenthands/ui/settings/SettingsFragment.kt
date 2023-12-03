@@ -1,5 +1,6 @@
 package com.google.mediapipe.examples.fluenthands.ui.settings
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -18,6 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+
 class SettingsFragment : Fragment() {
     private lateinit var helloName: TextView
     private lateinit var name: TextView
@@ -30,12 +32,17 @@ class SettingsFragment : Fragment() {
 
     private lateinit var firebaseAuth: FirebaseAuth
 
+    companion object {
+        private const val PROFILE_ACTIVITY_REQUEST_CODE = 1001
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
         var view = inflater.inflate(R.layout.fragment_settings2, container, false)
 
         firebaseAuth = FirebaseAuth.getInstance()
+
 
 //        Get xml items for udpating UI
         helloName = view.findViewById(R.id.helloSettings)
@@ -62,10 +69,13 @@ class SettingsFragment : Fragment() {
 
         fetchData()
 
-
         return view
     }
 
+    override fun onResume() {
+        super.onResume()
+        fetchData()
+    }
     private fun fetchData() {
 //        Get data from DB then set values
         val user: FirebaseUser? = firebaseAuth.currentUser
@@ -81,7 +91,7 @@ class SettingsFragment : Fragment() {
             email.text = "Email: $getEmail"
             averageScore.text = "Average Score: $getAverageScore%"
             accountCreated.text = "Accounted Created: $getAccountCreated"
-        }
+            }
         }
 
     private fun getAccountCreationDate(user: FirebaseUser): String {
@@ -91,6 +101,7 @@ class SettingsFragment : Fragment() {
         val creationDate = Date(creationTimestamp)
         return sdf.format(creationDate)
     }
+
 
 
 }
