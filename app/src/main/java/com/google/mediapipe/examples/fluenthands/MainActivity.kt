@@ -39,14 +39,21 @@ class MainActivity : AppCompatActivity() {
     private var currentWordCount = 0 // Current word count
     private var userScore = 0 // User's score
 
+    private val displayedWords = mutableSetOf<String>()
+
     // Array containing alphabets from a to z
     private val easy = ('a'..'z').toList().toCharArray()
 
-    // Array containing a list of 3-letter words without the alphabet 'v'
-    private val medium = arrayOf("cat", "dog", "bat", "hat", "run", "fun", "sun", "car", "bar", "jar", "pen", "hen", "fox", "box", "cup", "rug", "mug", "bug", "big", "dig")
+    // Array containing a list of 3-letter words
+    private val medium = arrayOf("cat", "dog", "bat", "hat", "run", "fun", "sun", "car", "bar", "jar",
+        "gray", "fall", "warm", "blue", "fern", "peak", "fade", "twig", "seed", "peak",
+        "ace", "top", "zip", "lap", "mix", "zap", "lip", "joy", "wet", "sky",
+        "star", "moon", "song", "book", "tree", "fire", "lake", "rose", "bird", "wind")
 
-    // Array containing a list of 5-letter words without the alphabet 'v'
-    private val difficult = arrayOf("house", "mouse", "apple", "happy", "cloud", "table", "chair", "beach", "earth", "river", "mount", "smile", "grape", "melon", "snake", "plane", "ocean", "knife", "honey", "music")
+    // Array containing a list of 5-letter words
+    private val difficult = arrayOf("house", "mouse", "apple", "happy", "cloud", "table", "chair", "beach", "earth", "river",
+        "mount", "smile", "grape", "melon", "banana", "orange", "rocket", "guitar", "candle", "planet",
+        "champion", "saturday", "awesome", "diamond", "victory", "morning", "freedom")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +73,19 @@ class MainActivity : AppCompatActivity() {
         val backButton = findViewById<ImageButton>(R.id.back_button)
         backButton.setOnClickListener {
             finish()
+        }
+
+        val yesButton = findViewById<ImageButton>(R.id.yesButton)
+        val submitButton = findViewById<ImageButton>(R.id.submitButton)
+
+        if (currentWordCount < totalWords - 1) {
+            // Show "Yes" button if the word count is less than 10
+            yesButton.visibility = View.VISIBLE
+            submitButton.visibility = View.GONE
+        } else {
+            // Show "Submit" button if the word count is 10
+            yesButton.visibility = View.GONE
+            submitButton.visibility = View.VISIBLE
         }
 
         findViewById<ImageButton>(R.id.yesButton).setOnClickListener {
@@ -174,7 +194,7 @@ class MainActivity : AppCompatActivity() {
         if(currentWordCount < totalWords){
             displayRandomWord(difficulty)
         } else {
-            Toast.makeText(this, "You've completed $totalWords words!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "You've completed $totalWords words! Please submit", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -192,7 +212,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun displayRandomWord(difficulty: Difficulty) {
-        val randomWord = getRandomWord(difficulty)
+        var randomWord: String
+        do {
+            randomWord = getRandomWord(difficulty)
+        } while (displayedWords.contains(randomWord))
+
+        displayedWords.add(randomWord)
+
         findViewById<TextView>(R.id.wordTextView).text = randomWord
+
+        val yesButton = findViewById<ImageButton>(R.id.yesButton)
+        val submitButton = findViewById<ImageButton>(R.id.submitButton)
+
+        if (currentWordCount < totalWords - 1) {
+            // Show "Yes" button if the word count is less than 10
+            yesButton.visibility = View.VISIBLE
+            submitButton.visibility = View.GONE
+        } else {
+            // Show "Submit" button if the word count is 10
+            yesButton.visibility = View.GONE
+            submitButton.visibility = View.VISIBLE
+        }
     }
 }
