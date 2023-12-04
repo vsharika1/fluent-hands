@@ -34,12 +34,40 @@
         </androidx.appcompat.widget.Toolbar>
 
         <!-- Modified ImageView with increased height -->
+        <ImageButton
+            android:id="@+id/left_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/camera_overlay"
+            android:layout_alignBottom="@id/camera_overlay"
+            android:layout_toLeftOf="@id/camera_overlay"
+            android:src="@drawable/arrow_back_ios_24px"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginLeft="20px"
+            android:contentDescription="@string/back_button_description" />
+
         <ImageView
             android:id="@+id/camera_overlay"
-            android:layout_width="match_parent"
-            android:layout_height="208dp"
+            android:layout_width="327dp"
+            android:layout_height="150dp"
             android:layout_below="@id/toolbar"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="21dp"
             android:src="@drawable/fluenthands" />
+
+        <!-- Right Button -->
+        <ImageButton
+            android:id="@+id/right_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/camera_overlay"
+            android:layout_alignBottom="@id/camera_overlay"
+            android:layout_toRightOf="@id/camera_overlay"
+            android:src="@drawable/arrow_back_ios_24px"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/back_button_description"
+            android:layout_marginRight="20px"
+            android:scaleX="-1"/>
 
         <TextView
             android:id="@+id/alphabetTextView"

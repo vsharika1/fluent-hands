@@ -32,6 +32,7 @@ class LearningPage : AppCompatActivity() {
     private lateinit var activityMainBinding: ActivityLearningPageBinding
     private val viewModel: MainViewModel by viewModels()
     private lateinit var backButton: Button
+    private var index=0
     private val letterDrawables = arrayOf(
         R.drawable.a, R.drawable.b, R.drawable.c, R.drawable.d, R.drawable.e,
         R.drawable.f, R.drawable.g, R.drawable.h, R.drawable.i, R.drawable.j,
@@ -39,6 +40,14 @@ class LearningPage : AppCompatActivity() {
         R.drawable.p, R.drawable.q, R.drawable.r, R.drawable.s, R.drawable.t,
         R.drawable.u, R.drawable.v, R.drawable.w, R.drawable.x, R.drawable.y,
         R.drawable.z
+    )
+    private val letter = arrayOf(
+        "A", "B", "C", "D", "E",
+        "F", "G", "H", "I", "J",
+        "K", "L", "M", "N", "O",
+        "P", "Q", "R", "S", "T",
+        "U", "V", "W", "X", "Y",
+        "Z"
     )
 
 
@@ -58,14 +67,30 @@ class LearningPage : AppCompatActivity() {
         backButton.setOnClickListener {
             finish()
         }
+        val leftButton = findViewById<ImageButton>(R.id.left_button)
+        leftButton.setOnClickListener {
+            if(index>0) {
+                index -= 1
+                setImage(index)
+            }
+        }
+        val rightButton = findViewById<ImageButton>(R.id.right_button)
+        rightButton.setOnClickListener {
+            if(index<25) {
+                index += 1
+                setImage(index)
+            }
+        }
     }
     fun setImage(index: Int) {
         val imageView = findViewById<ImageView>(R.id.camera_overlay)
-        if (index in letterDrawables.indices) {
-            imageView.setImageResource(letterDrawables[index])
-        } else {
-            imageView.setImageResource(R.drawable.fluenthands) // Default or fallback drawable
-        }
+        val textView = findViewById<TextView>(R.id.alphabetTextView)
+//        if (index in letterDrawables.indices) {
+        imageView.setImageResource(letterDrawables[index])
+        textView.text = letter[index]
+//        } else {
+////            imageView.setImageResource(R.drawable.fluenthands) // Default or fallback drawable
+//        }
     }
 
 
