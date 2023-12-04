@@ -15,7 +15,9 @@
  */
 package com.google.mediapipe.examples.fluenthands
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
@@ -54,6 +56,9 @@ class MainActivity : AppCompatActivity() {
             // ignore the reselection
         }
 
+        val difficulty = getSavedDifficulty()
+        displayRandomWord(difficulty)
+
         val backButton = findViewById<ImageButton>(R.id.back_button)
         backButton.setOnClickListener {
             finish()
@@ -66,13 +71,32 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.noButton).setOnClickListener {
             noButtonClick()
         }
-
-        val difficulty = Difficulty.EASY // Replace with the actual difficulty level
-        displayRandomWord(difficulty)
     }
 
     enum class Difficulty {
         EASY, MEDIUM, HARD
+    }
+
+    companion object {
+        private const val SHARED_PREFS_FILE = "shared_preferences"
+        private const val DIFFICULTY_KEY = "difficulty"
+    }
+
+    private fun getSavedDifficulty(): Difficulty {
+        val sharedPreferences = getSharedPreferences(SHARED_PREFS_FILE, MODE_PRIVATE)
+        val savedDifficulty = sharedPreferences.getInt(DIFFICULTY_KEY, 0)
+
+        Log.d("MainActivity", "Saved Difficulty level: $savedDifficulty")
+        return getDifficulty(savedDifficulty)
+    }
+
+    private fun getDifficulty(progress: Int): Difficulty {
+        return when (progress) {
+            0 -> Difficulty.EASY
+            1 -> Difficulty.MEDIUM
+            2 -> Difficulty.HARD
+            else -> Difficulty.EASY
+        }
     }
 
     override fun onBackPressed() {
@@ -123,7 +147,7 @@ class MainActivity : AppCompatActivity() {
             awardPoints(10)
 
             // Display a new random word
-            val difficulty = Difficulty.EASY // Replace with the actual difficulty level
+            val difficulty = getSavedDifficulty()
             displayRandomWord(difficulty)
         } else {
             // Handle incorrect answer (you can replace this with your desired logic)
@@ -134,7 +158,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun noButtonClick(){
-        val difficulty = Difficulty.EASY // Replace with the actual difficulty level
+        val difficulty = getSavedDifficulty()
         displayRandomWord(difficulty)
     }
 
