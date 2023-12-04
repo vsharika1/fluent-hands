@@ -58,22 +58,35 @@
             android:textColor="@android:color/black"
             android:padding="16dp"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/noButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No"
+            android:src = "@drawable/no"
+            android:background="#FFFFFF"
             android:layout_below="@id/navigation"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="5dp"
             android:layout_marginStart="16dp" />
 
-        <Button
+        <ImageButton
             android:id="@+id/yesButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Yes"
+            android:src = "@drawable/yes"
+            android:background="#FFFFFF"
             android:layout_below="@id/navigation"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="16dp"
+            android:layout_alignParentEnd="true" />
+
+        <ImageButton
+            android:id="@+id/submitButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src = "@drawable/submit"
+            android:background="#FFFFFF"
+            android:layout_below="@id/navigation"
+            android:layout_marginTop="5dp"
             android:layout_marginEnd="16dp"
             android:layout_alignParentEnd="true" />
 
