@@ -15,11 +15,14 @@
  */
 package com.google.mediapipe.examples.fluenthands
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
@@ -31,6 +34,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var activityMainBinding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
     private lateinit var backButton: Button
+
+    // Array containing alphabets from a to z
+    private val easy = ('a'..'z').toList().toCharArray()
+
+    // Array containing a list of 3-letter words without the alphabet 'v'
+    private val medium = arrayOf("cat", "dog", "bat", "hat", "run", "fun", "sun", "car", "bar", "jar", "pen", "hen", "fox", "box", "cup", "rug", "mug", "bug", "big", "dig")
+
+    // Array containing a list of 5-letter words without the alphabet 'v'
+    private val difficult = arrayOf("house", "mouse", "apple", "happy", "cloud", "table", "chair", "beach", "earth", "river", "mount", "smile", "grape", "melon", "snake", "plane", "ocean", "knife", "honey", "music")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,14 +56,68 @@ class MainActivity : AppCompatActivity() {
             // ignore the reselection
         }
 
+        val difficulty = getSavedDifficulty()
+        displayRandomWord(difficulty)
+
         val backButton = findViewById<ImageButton>(R.id.back_button)
         backButton.setOnClickListener {
             finish()
+        }
+
+        findViewById<Button>(R.id.yesButton).setOnClickListener {
+            yesButtonClick()
+        }
+
+        findViewById<Button>(R.id.noButton).setOnClickListener {
+            noButtonClick()
+        }
+    }
+
+    enum class Difficulty {
+        EASY, MEDIUM, HARD
+    }
+
+    companion object {
+        private const val SHARED_PREFS_FILE = "shared_preferences"
+        private const val DIFFICULTY_KEY = "difficulty"
+    }
+
+    private fun getSavedDifficulty(): Difficulty {
+        val sharedPreferences = getSharedPreferences(SHARED_PREFS_FILE, MODE_PRIVATE)
+        val savedDifficulty = sharedPreferences.getInt(DIFFICULTY_KEY, 0)
+
+        Log.d("MainActivity", "Saved Difficulty level: $savedDifficulty")
+        return getDifficulty(savedDifficulty)
+    }
+
+    private fun getDifficulty(progress: Int): Difficulty {
+        return when (progress) {
+            0 -> Difficulty.EASY
+            1 -> Difficulty.MEDIUM
+            2 -> Difficulty.HARD
+            else -> Difficulty.EASY
         }
     }
 
     override fun onBackPressed() {
         finish()
+    }
+
+    private fun getRandomWord(difficulty: Difficulty): String {
+        return when (difficulty) {
+            Difficulty.EASY -> {
+                // Return a random letter from the alphabets array
+                easy.random().toString()
+            }
+            Difficulty.MEDIUM -> {
+                // Return a random 3-letter word without 'v' from the words3LetterWithoutV array
+                medium.random()
+            }
+            Difficulty.HARD -> {
+                // Return a random 5-letter word without 'v' from the words5LetterWithoutV array
+                difficult.random()
+            }
+        }
     }
 
     fun deletebuttonClick(view: View?) {
@@ -69,5 +135,46 @@ class MainActivity : AppCompatActivity() {
         val textLabel = findViewById<TextView>(R.id.textLabel)
         textLabel.text = textLabel.text.toString() + " "
         ContextHolder.currentWord = textLabel.text.toString() + " "
+    }
+
+    fun yesButtonClick(){
+        // Get the current word displayed
+        val currentWord = findViewById<TextView>(R.id.wordTextView).text.toString()
+
+        // Check if the entered word matches the current random word
+        if (currentWord.equals(ContextHolder.currentWord, ignoreCase = true)) {
+            // Award points
+            awardPoints(10)
+
+            // Display a new random word
+            val difficulty = getSavedDifficulty()
+            displayRandomWord(difficulty)
+        } else {
+            // Handle incorrect answer (you can replace this with your desired logic)
+            // For example, decrement the score or show a hint
+            // Here, we're just displaying a toast message
+            Toast.makeText(this,"Incorrect Answer! Try again.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun noButtonClick(){
+        val difficulty = getSavedDifficulty()
+        displayRandomWord(difficulty)
+    }
+
+    private fun awardPoints(points: Int) {
+        // Implement your scoring logic here
+        // For example, update the user's score or perform other actions
+        // In this example, we're just displaying a toast message
+        Toast.makeText(this,"You earned $points points!", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun onSubmit(){
+        TODO()
+    }
+
+    private fun displayRandomWord(difficulty: Difficulty) {
+        val randomWord = getRandomWord(difficulty)
+        findViewById<TextView>(R.id.wordTextView).text = randomWord
     }
 }
