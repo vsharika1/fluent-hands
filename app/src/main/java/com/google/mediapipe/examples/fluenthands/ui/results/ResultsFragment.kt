@@ -1,13 +1,16 @@
 package com.google.mediapipe.examples.fluenthands.ui.results
 
+import android.content.Intent
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ListView
 import com.google.mediapipe.examples.fluenthands.R
+import com.google.mediapipe.examples.fluenthands.db.Result
 import com.google.mediapipe.examples.fluenthands.db.ResultDatabase
 import com.google.mediapipe.examples.fluenthands.db.ResultDatabaseDao
 import com.google.mediapipe.examples.fluenthands.db.ResultRepository
@@ -21,13 +24,12 @@ class ResultsFragment : Fragment() {
     private lateinit var databaseDao: ResultDatabaseDao
     private lateinit var repository: ResultRepository
     private lateinit var viewModelFactory: ResultViewModelFactory
-    private lateinit var exerciseEntryViewModel: ResultViewModel
+    private lateinit var resultViewModel: ResultViewModel
+    private lateinit var deleteButton: Button
 
     companion object {
         fun newInstance() = ResultsFragment()
     }
-
-    private lateinit var viewModel: ResultsViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,19 +43,29 @@ class ResultsFragment : Fragment() {
         databaseDao = database.resultDatabaseDao
         repository = ResultRepository(databaseDao)
         viewModelFactory = ResultViewModelFactory(repository)
-        exerciseEntryViewModel = ViewModelProvider(this, viewModelFactory).get(ResultViewModel::class.java)
+        resultViewModel = ViewModelProvider(this, viewModelFactory).get(ResultViewModel::class.java)
         adapter = ResultsAdapter(requireContext(), emptyList())
 
         // Set the adapter to the ListView
         listView.adapter = adapter
 
+        resultViewModel.allResultData.observe(viewLifecycleOwner) { results ->
+            // Update the adapter with new data
+            adapter.replace(results)
+            adapter.notifyDataSetChanged()
+        }
+
+        deleteButton = view.findViewById(R.id.delete)
+        deleteButton.setOnClickListener(){
+            resultViewModel.deleteAll()
+        }
+
         return view
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(ResultsViewModel::class.java)
-        // TODO: Use the ViewModel
+    override fun onResume() {
+        super.onResume()
+        adapter.notifyDataSetChanged()
     }
 
 }

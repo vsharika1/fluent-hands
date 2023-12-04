@@ -20,9 +20,12 @@ class ResultViewModel(private var repository: ResultRepository): ViewModel() {
         repository.deleteResultById(resultId)
     }
 
-    fun deleteResultTable() {
-        repository.deleteResultTable()
+    fun deleteAll(){
+        val commentList = allResultData.value
+        if (commentList != null && commentList.size > 0)
+            repository.deleteAll()
     }
+
 }
 
 

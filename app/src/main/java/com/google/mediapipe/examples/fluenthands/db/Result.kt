@@ -14,10 +14,13 @@ data class Result (
     var id: Long = 0L,
 
     @ColumnInfo(name = "score")
-    var score: String = "",
+    var score: Int,
 
     @ColumnInfo(name = "date_time")
-    var dateTime: Calendar
+    var dateTime: Calendar,
+
+    @ColumnInfo(name = "quiz_Num")
+    var quizNum: Int
 
     )
 

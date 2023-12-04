@@ -4,8 +4,10 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.TextView
 import com.google.mediapipe.examples.fluenthands.R
 import com.google.mediapipe.examples.fluenthands.db.Result
+import java.text.SimpleDateFormat
 
 class ResultsAdapter(private val context: Context, private var ResultsList: List<Result>): BaseAdapter() {
 
@@ -23,6 +25,15 @@ class ResultsAdapter(private val context: Context, private var ResultsList: List
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View{
         val view: View = View.inflate(context, R.layout.adapter_result,null)
+
+        val tvQuizNumber = view.findViewById(R.id.quizNum) as TextView
+        val tvScore = view.findViewById(R.id.score) as TextView
+        val tvDate = view.findViewById(R.id.date) as TextView
+        val sdf = SimpleDateFormat("MM/dd/yyyy HH:mm:ss")
+
+        tvDate.text = sdf.format(ResultsList[position].dateTime.time)
+        tvQuizNumber.text = ResultsList[position].id.toString()
+        tvScore.text = ResultsList[position].score.toString()
         return view
     }
 

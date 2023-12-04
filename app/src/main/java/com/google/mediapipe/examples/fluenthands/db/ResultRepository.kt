@@ -30,4 +30,10 @@ class ResultRepository(private val resultDatabaseDao: ResultDatabaseDao) {
             resultDatabaseDao.deleteExerciseById(resultId)
         }
     }
+
+    fun deleteAll(){
+        CoroutineScope(Dispatchers.IO).launch {
+            resultDatabaseDao.deleteAll()
+        }
+    }
 }
