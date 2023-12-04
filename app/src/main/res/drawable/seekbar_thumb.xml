@@ -1,10 +1,20 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
-        <shape android:shape="oval">
-            <solid android:color="#000000"/>
-            <size
-                android:width="24dp"
-                android:height="24dp"/>
-        </shape>
+        <layer-list>
+            <!-- White border -->
+            <item>
+                <shape android:shape="oval">
+                    <solid android:color="#FFFFFF"/> <!-- White color -->
+                    <size android:width="24dp" android:height="24dp"/> <!-- Border size -->
+                </shape>
+            </item>
+            <!-- Blue thumb -->
+            <item android:top="2dp" android:bottom="2dp" android:left="2dp" android:right="2dp">
+                <shape android:shape="oval">
+                    <solid android:color="#2196F3"/> <!-- Blue color -->
+                    <size android:width="20dp" android:height="20dp"/> <!-- Thumb size -->
+                </shape>
+            </item>
+        </layer-list>
     </item>
 </selector>

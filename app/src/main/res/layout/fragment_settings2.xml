@@ -115,6 +115,7 @@
                         android:layout_margin="5dp"
                         android:background="@drawable/button_sharp_curved"
                         android:text="@string/userProfileButton"
+                        android:textSize="15sp"
                         android:textColor="#000000"
                         app:cornerRadius="10dp" />
 
@@ -153,17 +154,30 @@
                         android:textStyle="bold"
                         android:layout_alignParentTop="true"/>
 
+<!--                    <SeekBar-->
+<!--                        android:id="@+id/difficultySeekBar"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_below="@id/difficultySettings"-->
+<!--                        android:layout_marginTop="10dp"-->
+<!--                        android:layout_marginBottom="10dp"-->
+<!--                        android:max="2"-->
+<!--                        android:progress="1"-->
+<!--                        android:progressDrawable="@drawable/seekbar_progress"-->
+<!--                        android:thumb="@drawable/seekbar_thumb" />-->
                     <SeekBar
                         android:id="@+id/difficultySeekBar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/difficultySettings"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="10dp"
+                        android:paddingStart="0dp"
+                        android:paddingEnd="0dp"
                         android:max="2"
                         android:progress="1"
                         android:progressDrawable="@drawable/seekbar_progress"
-                        android:thumb="@drawable/seekbar_thumb" />
+                        android:thumb="@drawable/seekbar_thumb"
+                        android:splitTrack="false"
+                        android:thumbOffset="0dp" />
+
 
                     <TextView
                         android:id="@+id/textEasy"
@@ -210,7 +224,7 @@
                 android:layout_marginBottom="20dp"
                 android:background="@drawable/button_sharp_curved"
                 android:text="Log Out"
-                android:textSize="20sp"
+                android:textSize="15sp"
                 app:cornerRadius="8dp" />
 
             <Button
@@ -221,7 +235,7 @@
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/button_sharp_curved"
                 android:text="Credits"
-                android:textSize="20sp"
+                android:textSize="15sp"
                 app:cornerRadius="8dp" />
 
         </LinearLayout>
