@@ -98,8 +98,10 @@ class CameraActivity: AppCompatActivity() {
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val imageUri = output.savedUri
-//                    WRITE TO DB
-//                    DB.INSERT(imageUri.toString())
+                    val sharedPreferences = getSharedPreferences("profilePicture", MODE_PRIVATE)
+                    val write = sharedPreferences.edit()
+                    write.putString("imgUri", imageUri.toString())
+                    write.apply()
 
                     val msg = "Photo capture succeeded: ${output.savedUri}"
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
