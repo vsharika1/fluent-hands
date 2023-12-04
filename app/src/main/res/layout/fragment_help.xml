@@ -27,14 +27,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/top_guideline">
 
-        <TextView
-            android:id="@+id/textViewCard1"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
-            android:padding="16dp"
-            android:text="Learn about the 'Quiz Page'."
-            android:textStyle="bold" />
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/imageViewCard1"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/hand_gesture_24px" />
+
+            <TextView
+                android:id="@+id/textViewCard1"
+                android:layout_width="302dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:paddingLeft="20dp"
+                android:text="Learn about the 'Quiz Page'."
+                android:textStyle="bold" />
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -51,6 +67,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/card1">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/imageViewCard2"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/school_24px" />
+
         <TextView
             android:id="@+id/textViewCard2"
             android:layout_width="match_parent"
@@ -59,6 +89,7 @@
             android:padding="16dp"
             android:text="Learn about the 'Learning Page'."
             android:textStyle="bold" />
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -75,6 +106,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/card2">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/imageViewCard3"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/monitoring_24px" />
+
         <TextView
             android:id="@+id/textViewCard3"
             android:layout_width="match_parent"
@@ -83,6 +128,7 @@
             android:padding="16dp"
             android:text="Learn about the 'Results Page'."
             android:textStyle="bold" />
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -99,6 +145,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/card3">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/imageViewCard4"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/account_circle_24px" />
+
         <TextView
             android:id="@+id/textViewCard4"
             android:layout_width="match_parent"
@@ -107,6 +167,7 @@
             android:padding="16dp"
             android:text="Learn about 'Profile Page'."
             android:textStyle="bold" />
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -124,6 +185,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/card4">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/imageViewCard5"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/manage_accounts_24px" />
+
         <TextView
             android:id="@+id/textViewCard5"
             android:layout_width="match_parent"
@@ -132,6 +207,7 @@
             android:padding="16dp"
             android:text="Learn about the 'Update Profile Page'."
             android:textStyle="bold" />
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 
     <androidx.constraintlayout.widget.Guideline
