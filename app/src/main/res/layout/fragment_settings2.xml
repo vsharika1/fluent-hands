@@ -113,7 +113,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
-                        android:background="@color/mp_color_primary"
+                        android:background="@drawable/button_sharp_curved"
                         android:text="@string/userProfileButton"
                         android:textColor="#000000"
                         app:cornerRadius="10dp" />
@@ -208,7 +208,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="20dp"
-                android:background="@color/mp_color_primary"
+                android:background="@drawable/button_sharp_curved"
                 android:text="Log Out"
                 android:textSize="20sp"
                 app:cornerRadius="8dp" />
@@ -219,7 +219,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:background="@color/mp_color_primary"
+                android:background="@drawable/button_sharp_curved"
                 android:text="Credits"
                 android:textSize="20sp"
                 app:cornerRadius="8dp" />
