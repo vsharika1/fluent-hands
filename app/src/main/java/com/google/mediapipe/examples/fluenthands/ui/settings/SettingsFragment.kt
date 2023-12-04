@@ -1,6 +1,7 @@
 package com.google.mediapipe.examples.fluenthands.ui.settings
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
@@ -37,6 +38,8 @@ class SettingsFragment : Fragment() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var difficultySeekBar: SeekBar
 
+    private lateinit var creditsButton: Button
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
@@ -62,7 +65,6 @@ class SettingsFragment : Fragment() {
             }
         })
 
-
 //        Get xml items for udpating UI
         helloName = view.findViewById(R.id.helloSettings)
         userPicture = view.findViewById(R.id.profilePhoto)
@@ -86,6 +88,11 @@ class SettingsFragment : Fragment() {
             val activity = requireActivity()
             val intent: Intent = Intent(activity, ProfileActivity::class.java)
             startActivity(intent)
+        }
+
+        creditsButton = view.findViewById(R.id.creditsButton)
+        creditsButton.setOnClickListener {
+            openCreditsDialog()
         }
 
         return view
@@ -139,5 +146,15 @@ class SettingsFragment : Fragment() {
         val sdf = SimpleDateFormat("MMM dd, yyyy - HH:mm z", Locale.getDefault())
         val creationDate = Date(creationTimestamp)
         return sdf.format(creationDate)
+    }
+
+    private fun openCreditsDialog() {
+        val alertDialog = AlertDialog.Builder(requireContext())
+        alertDialog.setTitle("Credits")
+        alertDialog.setMessage("Created by [Your Name]\n\nSpecial Thanks to [Acknowledgements]")
+        alertDialog.setPositiveButton("Close") { dialog, which ->
+            dialog.dismiss()
+        }
+        alertDialog.show()
     }
 }
