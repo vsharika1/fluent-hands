@@ -35,6 +35,10 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private lateinit var backButton: Button
 
+    private var totalWords = 10 // Total number of words to generate
+    private var currentWordCount = 0 // Current word count
+    private var userScore = 0 // User's score
+
     // Array containing alphabets from a to z
     private val easy = ('a'..'z').toList().toCharArray()
 
@@ -64,11 +68,11 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
 
-        findViewById<Button>(R.id.yesButton).setOnClickListener {
+        findViewById<ImageButton>(R.id.yesButton).setOnClickListener {
             yesButtonClick()
         }
 
-        findViewById<Button>(R.id.noButton).setOnClickListener {
+        findViewById<ImageButton>(R.id.noButton).setOnClickListener {
             noButtonClick()
         }
     }
@@ -146,11 +150,16 @@ class MainActivity : AppCompatActivity() {
             // Award points
             awardPoints(10)
 
-            // Display a new random word
-            val difficulty = getSavedDifficulty()
-            displayRandomWord(difficulty)
+            currentWordCount++
+
+            if (currentWordCount<totalWords){
+                // Display a new random word
+                val difficulty = getSavedDifficulty()
+                displayRandomWord(difficulty)
+            } else {
+                Toast.makeText(this, "You've completed $totalWords words!", Toast.LENGTH_SHORT).show()
+            }
         } else {
-            // Handle incorrect answer (you can replace this with your desired logic)
             // For example, decrement the score or show a hint
             // Here, we're just displaying a toast message
             Toast.makeText(this,"Incorrect Answer! Try again.", Toast.LENGTH_SHORT).show()
@@ -159,18 +168,27 @@ class MainActivity : AppCompatActivity() {
 
     fun noButtonClick(){
         val difficulty = getSavedDifficulty()
-        displayRandomWord(difficulty)
+
+        currentWordCount++
+
+        if(currentWordCount < totalWords){
+            displayRandomWord(difficulty)
+        } else {
+            Toast.makeText(this, "You've completed $totalWords words!", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun awardPoints(points: Int) {
         // Implement your scoring logic here
         // For example, update the user's score or perform other actions
         // In this example, we're just displaying a toast message
+        userScore += points
         Toast.makeText(this,"You earned $points points!", Toast.LENGTH_SHORT).show()
     }
 
     private fun onSubmit(){
-        TODO()
+        val timestamp = System.currentTimeMillis()
+        val difficulty = getSavedDifficulty()
     }
 
     private fun displayRandomWord(difficulty: Difficulty) {
