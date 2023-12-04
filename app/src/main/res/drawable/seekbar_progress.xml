@@ -12,7 +12,7 @@
         <scale android:scaleWidth="100%">
             <shape>
                 <corners android:radius="20dp" />
-                <solid android:color="#FF0000"/> <!-- Red progress -->
+                <solid android:color="#8E8FFA"/> <!-- Red progress -->
             </shape>
         </scale>
     </item>
