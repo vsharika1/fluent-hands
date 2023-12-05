@@ -123,13 +123,18 @@ class GestureRecognizerHelper(
     }
 
     private fun createBitmapFromImageProxy(imageProxy: ImageProxy): Bitmap {
-        return Bitmap.createBitmap(
+        val bitmap = Bitmap.createBitmap(
             imageProxy.width, imageProxy.height, Bitmap.Config.ARGB_8888
-        ).also { bitmap ->
-            imageProxy.use { bitmap.copyPixelsFromBuffer(imageProxy.planes[0].buffer) }
-            imageProxy.close()
+        )
+        try {
+            val buffer = imageProxy.planes[0].buffer
+            bitmap.copyPixelsFromBuffer(buffer)
+        } finally {
+            imageProxy.close() // Ensure that the ImageProxy is always closed
         }
+        return bitmap
     }
+
 
     private fun rotateBitmap(bitmap: Bitmap, imageProxy: ImageProxy): Bitmap {
         val matrix = Matrix().apply {

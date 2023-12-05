@@ -19,11 +19,12 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'de.undercouch.download'
     id 'com.google.gms.google-services'
+    id("kotlin-kapt")
 }
 
 android {
     namespace 'com.google.mediapipe.examples.fluenthands'
-    compileSdk 32
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.google.mediapipe.examples.fluenthands"
@@ -78,7 +79,11 @@ dependencies {
     implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.fragment:fragment-ktx:1.5.4'
+    implementation 'androidx.room:room-common:2.6.1'
+    implementation 'androidx.room:room-ktx:2.6.1'
 //    implementation 'com.google.firebase:firebase-auth:21.0.3'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.2'
+
 
     // CameraX core library
     def camerax_version = '1.2.0-alpha02'
@@ -114,4 +119,13 @@ dependencies {
     def nav_version = "2.5.3"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+
+
+    def room_version = "2.6.0"
+    def lifecycle_version = "2.6.2"
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx: $lifecycle_version")
 }
