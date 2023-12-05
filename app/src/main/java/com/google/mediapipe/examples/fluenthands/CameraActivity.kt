@@ -43,6 +43,8 @@ class CameraActivity: AppCompatActivity() {
     private lateinit var cameraExecutor: ExecutorService
 
     private lateinit var firebaseAuth: FirebaseAuth
+    private var lensFacing = CameraSelector.LENS_FACING_BACK
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,6 +61,7 @@ class CameraActivity: AppCompatActivity() {
         }
 //      Listener on take photo button to capture a photo
         viewBinding.cameraCaptureButton.setOnClickListener {takePhoto()}
+        viewBinding.flipCameraButton.setOnClickListener { flipCamera() }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
         firebaseAuth = FirebaseAuth.getInstance()
@@ -128,34 +131,36 @@ class CameraActivity: AppCompatActivity() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
         cameraProviderFuture.addListener({
-
-            // Used to bind the lifecycle of cameras to the lifecycle owner
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
-            // Preview
-            val preview = Preview.Builder()
-                .build()
-                .also {
-                    it.setSurfaceProvider(viewBinding.viewFinder.surfaceProvider)
-                }
+            val preview = Preview.Builder().build().also {
+                it.setSurfaceProvider(viewBinding.viewFinder.surfaceProvider)
+            }
 
             imageCapture = ImageCapture.Builder().build()
 
-            // Select back camera as a default
-            val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+            val cameraSelector = CameraSelector.Builder()
+                .requireLensFacing(lensFacing)
+                .build()
 
             try {
-                // Unbind all use cases before rebinding
                 cameraProvider.unbindAll()
-
-                // Bind use cases to the camera
-                cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageCapture)
+                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
             } catch (exc: Exception) {
                 Log.e("LiveData", "Use case binding failed", exc)
             }
         }, ContextCompat.getMainExecutor(this))
     }
+
+    private fun flipCamera() {
+        lensFacing = if (lensFacing == CameraSelector.LENS_FACING_BACK) {
+            CameraSelector.LENS_FACING_FRONT
+        } else {
+            CameraSelector.LENS_FACING_BACK
+        }
+        startCamera() // Restart the camera with the new configuration
+    }
+
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
