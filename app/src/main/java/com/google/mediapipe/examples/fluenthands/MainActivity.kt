@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
     private val displayedWords = mutableSetOf<String>()
 
     // Array containing alphabets from a to z
-    private val easy = ('a'..'z').toList().toCharArray()
+    private val easy = ('A'..'Z').toList().toCharArray()
 
     // Array containing a list of 3-letter words
     private val medium = arrayOf("cat", "dog", "bat", "hat", "run", "fun", "sun", "car", "bar", "jar",
