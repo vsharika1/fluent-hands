@@ -23,14 +23,24 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="350dp"
             android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:layout_marginTop="15sp"
+                android:layout_marginBottom="12sp"
+                android:paddingLeft="20sp"
                 android:text="Performance Graph"
+
                 android:textStyle="bold"/>
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/scoreLineChart"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+            />
 
         </LinearLayout>
 
