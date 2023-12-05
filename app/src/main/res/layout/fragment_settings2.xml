@@ -156,7 +156,7 @@
                         android:layout_marginTop="35dp"
                         android:layout_marginBottom="5dp"
                         android:max="2"
-                        android:progress="1"
+                        android:progress="0"
                         android:progressDrawable="@drawable/seekbar_progress"
                         android:thumb="@drawable/seekbar_thumb"
                         android:splitTrack="false"

@@ -3,8 +3,8 @@ package com.google.mediapipe.examples.fluenthands.ui.settings
 import android.app.AlertDialog
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
-import android.net.Uri
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -48,6 +48,9 @@ class SettingsFragment : Fragment() {
         firebaseAuth = FirebaseAuth.getInstance()
 
         difficultySeekBar = view.findViewById(R.id.difficultySeekBar)
+        // Initialize the SeekBar with saved difficulty or default to 0
+        val savedDifficulty = loadDifficulty()
+        difficultySeekBar.progress = savedDifficulty
 
         difficultySeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -122,14 +125,22 @@ class SettingsFragment : Fragment() {
     }
 
     private fun saveDifficulty(progress: Int) {
-
+        val user: FirebaseUser? = firebaseAuth.currentUser
+        val key = user?.uid ?: SHARED_PREFS_FILE
+        val sharedPreferences = requireActivity().getSharedPreferences(key, MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putInt(DIFFICULTY_KEY, progress)
+            apply()
+        }
         Log.d("SeekBar", "Saved Difficulty level changed to: $progress")
-        val sharedPreferences = requireActivity().getSharedPreferences(SHARED_PREFS_FILE, MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putInt(DIFFICULTY_KEY, progress)
-        editor.apply()
     }
 
+    private fun loadDifficulty(): Int {
+        val user: FirebaseUser? = firebaseAuth.currentUser
+        val key = user?.uid ?: SHARED_PREFS_FILE
+        val sharedPreferences = requireActivity().getSharedPreferences(key, MODE_PRIVATE)
+        return sharedPreferences.getInt(DIFFICULTY_KEY, 0) // Default to 0 if not found
+    }
     private fun fetchData() {
 
 //        Get data from DB then set values
