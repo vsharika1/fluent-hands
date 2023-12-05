@@ -48,9 +48,7 @@ class SettingsFragment : Fragment() {
         firebaseAuth = FirebaseAuth.getInstance()
 
         difficultySeekBar = view.findViewById(R.id.difficultySeekBar)
-        // Initialize the SeekBar with saved difficulty or default to 0
-        val savedDifficulty = loadDifficulty()
-        difficultySeekBar.progress = savedDifficulty
+        difficultySeekBar.progress = loadDifficulty()
 
         difficultySeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -103,6 +101,12 @@ class SettingsFragment : Fragment() {
 
         return view
     }
+
+    private fun loadDifficulty(): Int {
+        // Get the difficulty level from SharedPreferences
+        val sharedPreferences = requireActivity().getSharedPreferences(SHARED_PREFS_FILE, MODE_PRIVATE)
+        return sharedPreferences.getInt(DIFFICULTY_KEY, 0) // Default to 0 if not found
+    }
     private fun playSoundEffect() {
         mediaPlayer?.release()  // Release any previous MediaPlayer
         mediaPlayer = MediaPlayer.create(requireContext(), R.raw.sound) // Replace 'sound_effect' with your actual sound file's name
@@ -125,22 +129,14 @@ class SettingsFragment : Fragment() {
     }
 
     private fun saveDifficulty(progress: Int) {
-        val user: FirebaseUser? = firebaseAuth.currentUser
-        val key = user?.uid ?: SHARED_PREFS_FILE
-        val sharedPreferences = requireActivity().getSharedPreferences(key, MODE_PRIVATE)
-        with(sharedPreferences.edit()) {
-            putInt(DIFFICULTY_KEY, progress)
-            apply()
-        }
+        // Save the difficulty level to SharedPreferences
+        val sharedPreferences = requireActivity().getSharedPreferences(SHARED_PREFS_FILE, MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putInt(DIFFICULTY_KEY, progress)
+        editor.apply()  // Use apply() instead of commit() for a non-blocking call
         Log.d("SeekBar", "Saved Difficulty level changed to: $progress")
     }
 
-    private fun loadDifficulty(): Int {
-        val user: FirebaseUser? = firebaseAuth.currentUser
-        val key = user?.uid ?: SHARED_PREFS_FILE
-        val sharedPreferences = requireActivity().getSharedPreferences(key, MODE_PRIVATE)
-        return sharedPreferences.getInt(DIFFICULTY_KEY, 0) // Default to 0 if not found
-    }
     private fun fetchData() {
 
 //        Get data from DB then set values
