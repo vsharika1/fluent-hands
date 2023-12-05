@@ -118,11 +118,13 @@ class SettingsFragment : Fragment() {
     }
 
     private fun fetchData() {
-        val sharedPreferences = requireActivity().getSharedPreferences("profilePicture", MODE_PRIVATE)
-        userPicture.setImageURI(Uri.parse(sharedPreferences.getString("imgUri", "")))
+
 //        Get data from DB then set values
         val user: FirebaseUser? = firebaseAuth.currentUser
         if (user != null) {
+            var key: String =  user?.uid.toString()
+            val sharedPreferences = requireActivity().getSharedPreferences(key, MODE_PRIVATE)
+            userPicture.setImageURI(Uri.parse(sharedPreferences.getString("imgUri", "")))
             var getName = user.displayName
             var getEmail = user.email
             var getAverageScore = 80 // TO-DO

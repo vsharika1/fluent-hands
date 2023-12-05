@@ -16,6 +16,8 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.mediapipe.examples.fluenthands.databinding.ActivityCameraBinding
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -40,6 +42,8 @@ class CameraActivity: AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
     private lateinit var cameraExecutor: ExecutorService
 
+    private lateinit var firebaseAuth: FirebaseAuth
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +61,7 @@ class CameraActivity: AppCompatActivity() {
         viewBinding.cameraCaptureButton.setOnClickListener {takePhoto()}
 
         cameraExecutor = Executors.newSingleThreadExecutor()
+        firebaseAuth = FirebaseAuth.getInstance()
 
     }
 
@@ -97,8 +102,10 @@ class CameraActivity: AppCompatActivity() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    val user: FirebaseUser? = firebaseAuth.currentUser
                     val imageUri = output.savedUri
-                    val sharedPreferences = getSharedPreferences("profilePicture", MODE_PRIVATE)
+                    var key: String =  user?.uid.toString()
+                    val sharedPreferences = getSharedPreferences(key, MODE_PRIVATE)
                     val write = sharedPreferences.edit()
                     write.putString("imgUri", imageUri.toString())
                     write.apply()

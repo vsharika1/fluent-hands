@@ -65,7 +65,9 @@ class ProfileActivity: ComponentActivity() {
         getPhoto()
     }
     private fun getPhoto() {
-        val sharedPreferences = getSharedPreferences("profilePicture", MODE_PRIVATE)
+        val user: FirebaseUser? = firebaseAuth.currentUser
+        var key: String =  user?.uid.toString()
+        val sharedPreferences = getSharedPreferences(key, MODE_PRIVATE)
         profilePhoto.setImageURI(Uri.parse(sharedPreferences.getString("imgUri", "")))
     }
 
