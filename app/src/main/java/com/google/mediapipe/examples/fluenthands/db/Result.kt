@@ -19,8 +19,8 @@ data class Result (
     @ColumnInfo(name = "date_time")
     var dateTime: Calendar,
 
-    @ColumnInfo(name = "quiz_Num")
-    var quizNum: Int
+    @ColumnInfo(name = "difficulty")
+    var difficulty: String = ""
 
     )
 
