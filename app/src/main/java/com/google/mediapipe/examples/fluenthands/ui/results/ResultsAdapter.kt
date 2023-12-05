@@ -29,11 +29,14 @@ class ResultsAdapter(private val context: Context, private var ResultsList: List
         val tvQuizNumber = view.findViewById(R.id.quizNum) as TextView
         val tvScore = view.findViewById(R.id.score) as TextView
         val tvDate = view.findViewById(R.id.date) as TextView
+        val tvDifficulty = view.findViewById(R.id.difficulty) as TextView
         val sdf = SimpleDateFormat("MM/dd/yyyy HH:mm:ss")
 
         tvDate.text = sdf.format(ResultsList[position].dateTime.time)
         tvQuizNumber.text = ResultsList[position].id.toString()
         tvScore.text = ResultsList[position].score.toString()
+        tvDifficulty.text = ResultsList[position].difficulty
+
         return view
     }
 

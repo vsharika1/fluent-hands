@@ -25,17 +25,29 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.mediapipe.examples.fluenthands.databinding.ActivityMainBinding
+import com.google.mediapipe.examples.fluenthands.db.Result
+import com.google.mediapipe.examples.fluenthands.db.ResultDatabase
+import com.google.mediapipe.examples.fluenthands.db.ResultDatabaseDao
+import com.google.mediapipe.examples.fluenthands.db.ResultRepository
+import com.google.mediapipe.examples.fluenthands.db.ResultViewModel
+import com.google.mediapipe.examples.fluenthands.db.ResultViewModelFactory
 import com.google.mediapipe.examples.fluenthands.logic.ContextHolder
+import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
     private lateinit var activityMainBinding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
     private lateinit var backButton: Button
     private var mediaPlayer: MediaPlayer? = null
-
+    private lateinit var database: ResultDatabase
+    private lateinit var databaseDao: ResultDatabaseDao
+    private lateinit var repository: ResultRepository
+    private lateinit var viewModelFactory: ResultViewModelFactory
+    private lateinit var resultViewModel: ResultViewModel
     private var totalWords = 10 // Total number of words to generate
     private var currentWordCount = 0 // Current word count
     private var userScore = 0 // User's score
@@ -68,8 +80,30 @@ class MainActivity : AppCompatActivity() {
             // ignore the reselection
         }
 
+        database = ResultDatabase.getInstance(this)
+        databaseDao = database.resultDatabaseDao
+        repository = ResultRepository(databaseDao)
+        viewModelFactory = ResultViewModelFactory(repository)
+        resultViewModel = ViewModelProvider(this, viewModelFactory).get(ResultViewModel::class.java)
+        resultViewModel.allResultData.observe(this){
+            println("size : ${it.size}")
+        }
+
         val difficulty = getSavedDifficulty()
         displayRandomWord(difficulty)
+
+        val submitButton = findViewById<ImageButton>(R.id.submitButton)
+        submitButton.setOnClickListener {
+            val newResult = Result(
+                score = userScore,
+                dateTime = Calendar.getInstance(),
+                difficulty = difficulty.toString()
+            )
+
+            resultViewModel.insertResult(newResult)
+            finish()
+        }
+
 
         val backButton = findViewById<ImageButton>(R.id.back_button)
         backButton.setOnClickListener {
@@ -77,7 +111,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val yesButton = findViewById<ImageButton>(R.id.yesButton)
-        val submitButton = findViewById<ImageButton>(R.id.submitButton)
+
 
         if (currentWordCount < totalWords - 1) {
             // Show "Yes" button if the word count is less than 10
@@ -217,11 +251,6 @@ class MainActivity : AppCompatActivity() {
         // In this example, we're just displaying a toast message
         userScore += points
         Toast.makeText(this,"You earned $points points!", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun onSubmit(){
-        val timestamp = System.currentTimeMillis()
-        val difficulty = getSavedDifficulty()
     }
 
     private fun displayRandomWord(difficulty: Difficulty) {

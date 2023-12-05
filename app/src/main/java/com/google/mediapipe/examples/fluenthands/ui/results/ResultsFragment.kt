@@ -55,10 +55,6 @@ class ResultsFragment : Fragment() {
             adapter.notifyDataSetChanged()
         }
 
-        deleteButton = view.findViewById(R.id.delete)
-        deleteButton.setOnClickListener(){
-            resultViewModel.deleteAll()
-        }
 
         return view
     }
