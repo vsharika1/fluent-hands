@@ -56,8 +56,8 @@ class HelpFragment : Fragment() {
     
                     <b>Response Submission:</b><br>
                     • After gesturing, the user has two options:<br>
-                    • If the gesture is correct, the user can confirm by clicking the 'Yes' button.<br>
-                    • If the user wants to retry, they can click the 'No' button to make another attempt.<br><br>
+                    • If the gesture is correct, the user can confirm by clicking the 'Check' button.<br>
+                    • If the user wants to skip, they can click the 'Skip' button to move onto the next word.<br><br>
     
                     <b>Gesture Words in Sequence:</b><br>
                     • In cases where the quiz requires gesturing a word, the user can perform the gestures for the word sequentially. Each correctly gestured letter will appear below the camera view.<br><br>
@@ -67,7 +67,8 @@ class HelpFragment : Fragment() {
                     • To correct any mistakes, the user can remove letters by clicking the 'Backspace' button.<br><br>
     
                     <b>Submitting the Quiz:</b><br>
-                    • Once the user is satisfied with their answer, they can submit their quiz by pressing the 'Submit' button.<br>
+                    • Once the user has attempted 10 questions, the 'Check' button transforms into the 'Submit' button.<br>
+                    • The user can then submit their quiz by clicking on the 'Submit' button.<br>
                     """.trimIndent()
 
                 textView.text = HtmlCompat.fromHtml(formattedText, HtmlCompat.FROM_HTML_MODE_LEGACY)
