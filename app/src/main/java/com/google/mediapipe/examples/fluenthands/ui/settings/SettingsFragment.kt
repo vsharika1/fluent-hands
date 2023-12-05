@@ -3,6 +3,7 @@ package com.google.mediapipe.examples.fluenthands.ui.settings
 import android.app.AlertDialog
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
+import android.net.Uri
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
@@ -132,9 +133,13 @@ class SettingsFragment : Fragment() {
     }
 
     private fun fetchData() {
+
 //        Get data from DB then set values
         val user: FirebaseUser? = firebaseAuth.currentUser
         if (user != null) {
+            var key: String =  user?.uid.toString()
+            val sharedPreferences = requireActivity().getSharedPreferences(key, MODE_PRIVATE)
+            userPicture.setImageURI(Uri.parse(sharedPreferences.getString("imgUri", "")))
             var getName = user.displayName
             var getEmail = user.email
             var getAverageScore = 80 // TO-DO

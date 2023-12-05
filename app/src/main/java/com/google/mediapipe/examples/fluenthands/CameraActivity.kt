@@ -16,6 +16,8 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.mediapipe.examples.fluenthands.databinding.ActivityCameraBinding
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -40,6 +42,10 @@ class CameraActivity: AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
     private lateinit var cameraExecutor: ExecutorService
 
+    private lateinit var firebaseAuth: FirebaseAuth
+    private var lensFacing = CameraSelector.LENS_FACING_BACK
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,8 +61,10 @@ class CameraActivity: AppCompatActivity() {
         }
 //      Listener on take photo button to capture a photo
         viewBinding.cameraCaptureButton.setOnClickListener {takePhoto()}
+        viewBinding.flipCameraButton.setOnClickListener { flipCamera() }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
+        firebaseAuth = FirebaseAuth.getInstance()
 
     }
 
@@ -97,9 +105,13 @@ class CameraActivity: AppCompatActivity() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    val user: FirebaseUser? = firebaseAuth.currentUser
                     val imageUri = output.savedUri
-//                    WRITE TO DB
-//                    DB.INSERT(imageUri.toString())
+                    var key: String =  user?.uid.toString()
+                    val sharedPreferences = getSharedPreferences(key, MODE_PRIVATE)
+                    val write = sharedPreferences.edit()
+                    write.putString("imgUri", imageUri.toString())
+                    write.apply()
 
                     val msg = "Photo capture succeeded: ${output.savedUri}"
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
@@ -119,34 +131,36 @@ class CameraActivity: AppCompatActivity() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
         cameraProviderFuture.addListener({
-
-            // Used to bind the lifecycle of cameras to the lifecycle owner
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
-            // Preview
-            val preview = Preview.Builder()
-                .build()
-                .also {
-                    it.setSurfaceProvider(viewBinding.viewFinder.surfaceProvider)
-                }
+            val preview = Preview.Builder().build().also {
+                it.setSurfaceProvider(viewBinding.viewFinder.surfaceProvider)
+            }
 
             imageCapture = ImageCapture.Builder().build()
 
-            // Select back camera as a default
-            val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+            val cameraSelector = CameraSelector.Builder()
+                .requireLensFacing(lensFacing)
+                .build()
 
             try {
-                // Unbind all use cases before rebinding
                 cameraProvider.unbindAll()
-
-                // Bind use cases to the camera
-                cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageCapture)
+                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
             } catch (exc: Exception) {
                 Log.e("LiveData", "Use case binding failed", exc)
             }
         }, ContextCompat.getMainExecutor(this))
     }
+
+    private fun flipCamera() {
+        lensFacing = if (lensFacing == CameraSelector.LENS_FACING_BACK) {
+            CameraSelector.LENS_FACING_FRONT
+        } else {
+            CameraSelector.LENS_FACING_BACK
+        }
+        startCamera() // Restart the camera with the new configuration
+    }
+
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
