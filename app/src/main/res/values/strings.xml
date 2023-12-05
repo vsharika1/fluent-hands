@@ -83,5 +83,5 @@
     <string name="flipCamera">Flip</string>
 
     <string name="signUpText">Not Registered Yet , <u><b>Sign Up</b></u> !</string>
-
+    <string name="signInText">Already Registered , <u><b>Sign In</b></u> !</string>
 </resources>
