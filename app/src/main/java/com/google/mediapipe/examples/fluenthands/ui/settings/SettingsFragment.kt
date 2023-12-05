@@ -171,7 +171,7 @@ class SettingsFragment : Fragment() {
     private fun openCreditsDialog() {
         val alertDialog = AlertDialog.Builder(requireContext())
         alertDialog.setTitle("Credits")
-        alertDialog.setMessage("This application has been brought to fruition by Group 18, comprising Archit V., Daniel K., Janit K., Varun R., and Vishwajit S.\n\n" +
+        alertDialog.setMessage("This application has been brought to fruition by Group 18, comprising Archit V., Daniel K., Janit K., Varun R., and Vishavjit H.\n\n" +
                 "We extend our special gratitude to GitHub user AdamMod13, whose sign language recognition dataset has been instrumental and served as an inspiration for this project.\n\n" +
                 "Our sincere thanks to MediaPipe for permitting the use of their gesture recognition codebase and framework, which forms the foundation of our Android application.");
 

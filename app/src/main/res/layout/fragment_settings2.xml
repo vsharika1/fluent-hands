@@ -154,23 +154,14 @@
                         android:textStyle="bold"
                         android:layout_alignParentTop="true"/>
 
-<!--                    <SeekBar-->
-<!--                        android:id="@+id/difficultySeekBar"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_below="@id/difficultySettings"-->
-<!--                        android:layout_marginTop="10dp"-->
-<!--                        android:layout_marginBottom="10dp"-->
-<!--                        android:max="2"-->
-<!--                        android:progress="1"-->
-<!--                        android:progressDrawable="@drawable/seekbar_progress"-->
-<!--                        android:thumb="@drawable/seekbar_thumb" />-->
                     <SeekBar
                         android:id="@+id/difficultySeekBar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingStart="0dp"
                         android:paddingEnd="0dp"
+                        android:layout_marginTop="35dp"
+                        android:layout_marginBottom="5dp"
                         android:max="2"
                         android:progress="1"
                         android:progressDrawable="@drawable/seekbar_progress"
