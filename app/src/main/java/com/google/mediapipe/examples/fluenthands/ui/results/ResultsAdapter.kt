@@ -32,10 +32,10 @@ class ResultsAdapter(private val context: Context, private var ResultsList: List
         val tvDifficulty = view.findViewById(R.id.difficulty) as TextView
         val sdf = SimpleDateFormat("MM/dd/yyyy HH:mm:ss")
 
-        tvDate.text = sdf.format(ResultsList[position].dateTime.time)
-        tvQuizNumber.text = ResultsList[position].id.toString()
-        tvScore.text = ResultsList[position].score.toString()
-        tvDifficulty.text = ResultsList[position].difficulty
+        tvDate.text = "Timestamp: ${sdf.format(ResultsList[position].dateTime.time)}"
+        tvQuizNumber.text = "Quiz: ${ResultsList[position].id}"
+        tvScore.text = "Score: ${ResultsList[position].score.toString()}"
+        tvDifficulty.text = "Level: ${ResultsList[position].difficulty}"
 
         return view
     }

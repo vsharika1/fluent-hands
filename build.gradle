@@ -27,3 +27,9 @@ plugins {
     id 'org.jetbrains.kotlin.android' version '1.7.10' apply false
     id 'de.undercouch.download' version '4.1.2' apply false
 }
+//allprojects {
+//    repositories {
+//        // other repositories like jcenter(), google(), etc.
+//        maven { url 'https://jitpack.io' }
+//    }
+//}
