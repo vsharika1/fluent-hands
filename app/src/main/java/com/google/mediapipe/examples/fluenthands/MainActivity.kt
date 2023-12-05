@@ -15,7 +15,7 @@
  */
 package com.google.mediapipe.examples.fluenthands
 
-import android.content.Context
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var activityMainBinding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
     private lateinit var backButton: Button
+    private var mediaPlayer: MediaPlayer? = null
 
     private var totalWords = 10 // Total number of words to generate
     private var currentWordCount = 0 // Current word count
@@ -182,7 +183,19 @@ class MainActivity : AppCompatActivity() {
         } else {
             // For example, decrement the score or show a hint
             // Here, we're just displaying a toast message
+            playSoundEffect()
             Toast.makeText(this,"Incorrect Answer! Try again.", Toast.LENGTH_SHORT).show()
+        }
+    }
+    private fun playSoundEffect() {
+        mediaPlayer?.release()  // Release any previous MediaPlayer
+        mediaPlayer = MediaPlayer.create(this, R.raw.negative) // Replace 'sound_effect' with your actual sound file's name
+        mediaPlayer?.start()  // Play sound
+
+        // Optionally set OnCompletionListener if you want to do something after the sound finishes playing
+        mediaPlayer?.setOnCompletionListener {
+            // Release the MediaPlayer once the sound has finished playing
+            it.release()
         }
     }
 

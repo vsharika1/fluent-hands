@@ -1,14 +1,12 @@
 package com.google.mediapipe.examples.fluenthands.ui.settings
 
-import android.app.Activity
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.net.Uri
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +14,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.mediapipe.examples.fluenthands.ProfileActivity
@@ -35,6 +34,7 @@ class SettingsFragment : Fragment() {
     private lateinit var userProfile: Button
     private lateinit var accountCreated: TextView
     private lateinit var logOutButton: Button
+    private var mediaPlayer: MediaPlayer? = null
 
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var difficultySeekBar: SeekBar
@@ -52,6 +52,10 @@ class SettingsFragment : Fragment() {
 
         difficultySeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                // Play sound effect
+                if (fromUser) {
+                    playSoundEffect()
+                }
                 // Update SharedPreferences with the selected difficulty
                 Log.d("SeekBar", "Progress changed: $progress")
                 saveDifficulty(progress)
@@ -97,6 +101,17 @@ class SettingsFragment : Fragment() {
         }
 
         return view
+    }
+    private fun playSoundEffect() {
+        mediaPlayer?.release()  // Release any previous MediaPlayer
+        mediaPlayer = MediaPlayer.create(requireContext(), R.raw.sound) // Replace 'sound_effect' with your actual sound file's name
+        mediaPlayer?.start()  // Play sound
+
+        // Optionally set OnCompletionListener if you want to do something after the sound finishes playing
+        mediaPlayer?.setOnCompletionListener {
+            // Release the MediaPlayer once the sound has finished playing
+            it.release()
+        }
     }
     override fun onResume() {
         super.onResume()
@@ -156,10 +171,18 @@ class SettingsFragment : Fragment() {
     private fun openCreditsDialog() {
         val alertDialog = AlertDialog.Builder(requireContext())
         alertDialog.setTitle("Credits")
-        alertDialog.setMessage("Created by [Your Name]\n\nSpecial Thanks to [Acknowledgements]")
+        alertDialog.setMessage("This application has been brought to fruition by Group 18, comprising Archit V., Daniel K., Janit K., Varun R., and Vishwajit S.\n\n" +
+                "We extend our special gratitude to GitHub user AdamMod13, whose sign language recognition dataset has been instrumental and served as an inspiration for this project.\n\n" +
+                "Our sincere thanks to MediaPipe for permitting the use of their gesture recognition codebase and framework, which forms the foundation of our Android application.");
+
         alertDialog.setPositiveButton("Close") { dialog, which ->
             dialog.dismiss()
         }
         alertDialog.show()
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer?.release()  // Release the MediaPlayer when the Fragment is destroyed
+        mediaPlayer = null
     }
 }

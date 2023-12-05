@@ -1,6 +1,7 @@
 package com.google.mediapipe.examples.fluenthands
 
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -34,10 +35,11 @@ class SignInActivity : AppCompatActivity() {
 
                 firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener {
                     if (it.isSuccessful) {
+                        playLoginSuccessSound()
                         val intent = Intent(this, BottomNavActivity::class.java)
                         startActivity(intent)
                     } else {
-                        Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Incorrect password/email."+"\n"+"Please check credentials and try again!", Toast.LENGTH_SHORT).show()
 
                     }
                 }
@@ -47,7 +49,19 @@ class SignInActivity : AppCompatActivity() {
             }
         }
     }
-
+    private fun playLoginSuccessSound() {
+        // Use try-catch to handle any exceptions
+        try {
+            val mediaPlayer: MediaPlayer = MediaPlayer.create(this, R.raw.login_success)
+            mediaPlayer.start() // no need to call prepare(); create() does that for you
+            mediaPlayer.setOnCompletionListener {
+                it.release() // Release the MediaPlayer when the sound has finished playing
+            }
+        } catch (e: Exception) {
+            // Handle exceptions such as no resource found or IO issues
+            e.printStackTrace()
+        }
+    }
     override fun onStart() {
         super.onStart()
 

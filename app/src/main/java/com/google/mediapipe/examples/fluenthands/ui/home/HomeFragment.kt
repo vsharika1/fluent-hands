@@ -1,7 +1,6 @@
 package com.google.mediapipe.examples.fluenthands.ui.home
 
 import android.content.Intent
-import android.nfc.cardemulation.CardEmulation
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -43,7 +42,6 @@ class HomeFragment : Fragment() {
 
         return binding.root
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
