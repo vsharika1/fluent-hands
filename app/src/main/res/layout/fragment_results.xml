@@ -40,23 +40,24 @@
 
         <ScrollView
             android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="481dp"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-            <ListView
-                android:id="@+id/results_list"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_margin="16dp"
-                android:divider="@null"
-                android:dividerHeight="10dp"
-                android:layout_height="481dp" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-        </LinearLayout>
+                <ListView
+                    android:id="@+id/results_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="365dp"
+                    android:layout_margin="16dp"
+                    android:divider="@null"
+                    android:dividerHeight="10dp" />
 
-    </ScrollView>
+            </LinearLayout>
+
+        </ScrollView>
     </LinearLayout>
 
 </FrameLayout>
