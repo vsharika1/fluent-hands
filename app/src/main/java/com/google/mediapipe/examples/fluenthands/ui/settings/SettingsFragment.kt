@@ -30,7 +30,6 @@ class SettingsFragment : Fragment() {
     private lateinit var name: TextView
     private lateinit var userPicture: ImageView
     private lateinit var email: TextView
-    private lateinit var averageScore: TextView
     private lateinit var userProfile: Button
     private lateinit var accountCreated: TextView
     private lateinit var logOutButton: Button
@@ -75,7 +74,6 @@ class SettingsFragment : Fragment() {
         userPicture = view.findViewById(R.id.profilePhoto)
         name = view.findViewById(R.id.settingsName)
         email = view.findViewById(R.id.settingsEmail)
-        averageScore = view.findViewById(R.id.settingsScore)
         userProfile = view.findViewById(R.id.userProfileButton)
         accountCreated = view.findViewById(R.id.dateCreated)
         logOutButton = view.findViewById(R.id.logoutButton)
@@ -142,7 +140,6 @@ class SettingsFragment : Fragment() {
             userPicture.setImageURI(Uri.parse(sharedPreferences.getString("imgUri", "")))
             var getName = user.displayName
             var getEmail = user.email
-            var getAverageScore = 80 // TO-DO
             var getAccountCreated = getAccountCreationDate(user)
 
             user.reload().addOnCompleteListener { reloadTask ->
@@ -155,7 +152,6 @@ class SettingsFragment : Fragment() {
             }
 //        userPicture.setImageURI()
             email.text = "Email: $getEmail"
-            averageScore.text = "Average Score: $getAverageScore%"
             accountCreated.text = "Accounted Created: $getAccountCreated"
             }
         }

@@ -124,7 +124,7 @@ class HelpFragment : Fragment() {
                 • At the top, your profile photo is displayed.<br><br>
 
                 <b>User Info:</b><br>
-                • Right below your profile photo, you'll find your name, email address, and average quiz score. This information provides a quick snapshot of your identity and performance in the app.<br><br>
+                • Right below your profile photo, you'll find your name and email address. This information provides a quick snapshot of your identity in the app.<br><br>
 
                 <b>Update Profile Button:</b><br>
                 • Tap on the 'Update User Profile' button to navigate to a page where you can change your profile photo and name.<br><br>
