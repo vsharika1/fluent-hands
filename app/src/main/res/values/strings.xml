@@ -82,4 +82,6 @@
     <string name="back_button_description">Back</string>
     <string name="flipCamera">Flip</string>
 
+    <string name="signUpText">Not Registered Yet , <u><b>Sign Up</b></u> !</string>
+
 </resources>

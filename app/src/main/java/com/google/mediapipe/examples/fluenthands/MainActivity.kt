@@ -58,15 +58,15 @@ class MainActivity : AppCompatActivity() {
     private val easy = ('A'..'Z').toList().toCharArray()
 
     // Array containing a list of 3-letter words
-    private val medium = arrayOf("cat", "dog", "bat", "hat", "run", "fun", "sun", "car", "bar", "jar",
-        "gray", "fall", "warm", "blue", "fern", "peak", "fade", "twig", "seed", "peak",
-        "ace", "top", "zip", "lap", "mix", "zap", "lip", "joy", "wet", "sky",
-        "star", "moon", "song", "book", "tree", "fire", "lake", "rose", "bird", "wind")
+    private val medium = arrayOf("CAT", "DOG", "BAT", "HAT", "RUN", "FUN", "SUN", "CAR", "BAR", "JAR",
+        "GRAY", "FALL", "WARM", "BLUE", "FERN", "PEAK", "FADE", "TWIG", "SEED", "PEAK",
+        "ACE", "TOP", "ZIP", "LAP", "MIX", "ZAP", "LIP", "JOY", "WET", "SKY",
+        "STAR", "MOON", "SONG", "BOOK", "TREE", "FIRE", "LAKE", "ROSE", "BIRD", "WIND")
 
     // Array containing a list of 5-letter words
-    private val difficult = arrayOf("house", "mouse", "apple", "happy", "cloud", "table", "chair", "beach", "earth", "river",
-        "mount", "smile", "grape", "melon", "banana", "orange", "rocket", "guitar", "candle", "planet",
-        "champion", "saturday", "awesome", "diamond", "victory", "morning", "freedom")
+    private val difficult = arrayOf("HOUSE", "MOUSE", "APPLE", "HAPPY", "CLOUD", "TABLE", "CHAIR", "BEACH", "EARTH", "RIVER",
+        "MOUNT", "SMILE", "GRAPE", "MELON", "BANANA", "ORANGE", "ROCKET", "GUITAR", "CANDLE", "PLANET",
+        "CHAMPION", "SATURDAY", "AWESOME", "DIAMOND", "VICTORY", "MORNING", "FREEDOM")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
