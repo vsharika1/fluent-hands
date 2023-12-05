@@ -26,11 +26,13 @@ class HelpFragment : Fragment() {
         _binding = FragmentHelpBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        // Set up click listeners for cards
         setupCards()
 
         return root
     }
 
+    // Set up click listeners for each card in the help section
     private fun setupCards() {
         binding.card1.setOnClickListener { showAlertDialog(1) }
         binding.card2.setOnClickListener { showAlertDialog(2) }
@@ -39,14 +41,17 @@ class HelpFragment : Fragment() {
         binding.card5.setOnClickListener { showAlertDialog(5) }
     }
 
+    // Function to display an AlertDialog based on the card number clicked
     private fun showAlertDialog(cardNumber: Int) {
         val builder = AlertDialog.Builder(requireContext())
         val customLayout = layoutInflater.inflate(R.layout.dialog_layout, null)
         builder.setView(customLayout)
 
-        // Set the image and text based on the cardNumber
+        // Get references to the image and text views in the custom layout
         val imageView: ImageView = customLayout.findViewById(R.id.dialogImage)
         val textView: TextView = customLayout.findViewById(R.id.dialogText)
+
+        // Based on the card number, set the appropriate image and text content
         when (cardNumber) {
             1 -> {
                 imageView.setImageResource(R.drawable.quizpage)

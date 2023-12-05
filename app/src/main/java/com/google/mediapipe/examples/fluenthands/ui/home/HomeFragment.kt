@@ -29,13 +29,16 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
+        // Initialize and set click listeners for the quiz and learning cards
         recognizerCard = binding.card1
         recognizerCard.setOnClickListener {
+            // Start MainActivity when the recognizer card is clicked
             val intent = Intent(requireActivity(), MainActivity::class.java)
             startActivity(intent)
         }
         learningCard = binding.card3
         learningCard.setOnClickListener {
+            // Start LearningPage when the learning card is clicked
             val intent = Intent(requireActivity(), LearningPage::class.java)
             startActivity(intent)
         }
