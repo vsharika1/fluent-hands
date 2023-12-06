@@ -33,6 +33,8 @@ class LearningPage : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private lateinit var backButton: Button
     private var index=0
+
+    //create a dataset for small alphabets
     private val letterDrawables = arrayOf(
         R.drawable.a, R.drawable.b, R.drawable.c, R.drawable.d, R.drawable.e,
         R.drawable.f, R.drawable.g, R.drawable.h, R.drawable.i, R.drawable.j,
@@ -41,6 +43,8 @@ class LearningPage : AppCompatActivity() {
         R.drawable.u, R.drawable.v, R.drawable.w, R.drawable.x, R.drawable.y,
         R.drawable.z
     )
+
+    //create a dataset for capital alphabets
     private val letter = arrayOf(
         "A", "B", "C", "D", "E",
         "F", "G", "H", "I", "J",
@@ -50,23 +54,29 @@ class LearningPage : AppCompatActivity() {
         "Z"
     )
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityMainBinding = ActivityLearningPageBinding.inflate(layoutInflater)
         setContentView(activityMainBinding.root)
 
+        //initialize nav fragment
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
         val navController = navHostFragment.navController
         activityMainBinding.navigation.setupWithNavController(navController)
         activityMainBinding.navigation.setOnNavigationItemReselectedListener {
             // ignore the reselection
         }
+
+        //initialize image to index 0
         setImage(0)
+
+        //finish the activity and go back to home screen
         val backButton = findViewById<ImageButton>(R.id.back_button)
         backButton.setOnClickListener {
             finish()
         }
+
+        //loads previous image with alphabet
         val leftButton = findViewById<ImageButton>(R.id.left_button)
         leftButton.setOnClickListener {
             if(index>0) {
@@ -74,6 +84,8 @@ class LearningPage : AppCompatActivity() {
                 setImage(index)
             }
         }
+
+        //loads next image with alphabet
         val rightButton = findViewById<ImageButton>(R.id.right_button)
         rightButton.setOnClickListener {
             if(index<25) {
@@ -82,15 +94,15 @@ class LearningPage : AppCompatActivity() {
             }
         }
     }
+    //helper function for setting an image
     fun setImage(index: Int) {
         val imageView = findViewById<ImageView>(R.id.camera_overlay)
         val textView = findViewById<TextView>(R.id.alphabetTextView)
-//        if (index in letterDrawables.indices) {
+
+        //sets the image based on text for user learning
         imageView.setImageResource(letterDrawables[index])
         textView.text = letter[index]
-//        } else {
-////            imageView.setImageResource(R.drawable.fluenthands) // Default or fallback drawable
-//        }
+
     }
 
 
@@ -98,10 +110,12 @@ class LearningPage : AppCompatActivity() {
         finish()
     }
 
+    //delete the detected alphabets
     fun deletebuttonClick(view: View?) {
         val textLabel = findViewById<TextView>(R.id.textLabel)
         val currentText = textLabel.text.toString()
 
+        //checks if there's a text to delete, if yes delete it
         if (currentText.isNotEmpty()) {
             val updatedText = currentText.substring(0, currentText.length - 1)
             textLabel.text = updatedText
@@ -109,6 +123,7 @@ class LearningPage : AppCompatActivity() {
         }
     }
 
+    //add space between the detected alphabets
     fun addSpacebuttonClick(view: View?) {
         val textLabel = findViewById<TextView>(R.id.textLabel)
         textLabel.text = textLabel.text.toString() + " "
