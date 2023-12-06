@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
         activityMainBinding.navigation.setupWithNavController(navController)
         activityMainBinding.navigation.setOnNavigationItemReselectedListener {
-            // ignore the reselection
+
         }
 
         database = ResultDatabase.getInstance(this)
@@ -169,11 +169,11 @@ class MainActivity : AppCompatActivity() {
                 easy.random().toString()
             }
             Difficulty.MEDIUM -> {
-                // Return a random 3-letter word without 'v' from the words3LetterWithoutV array
+                // Return a random 3-letter word from the array
                 medium.random()
             }
             Difficulty.HARD -> {
-                // Return a random 5-letter word without 'v' from the words5LetterWithoutV array
+                // Return a random 5-letter word from the array
                 difficult.random()
             }
         }
@@ -215,7 +215,6 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "You've completed $totalWords words!", Toast.LENGTH_SHORT).show()
             }
         } else {
-            // For example, decrement the score or show a hint
             // Here, we're just displaying a toast message
             playSoundEffect()
             Toast.makeText(this,"Incorrect Answer! Try again.", Toast.LENGTH_SHORT).show()
@@ -246,9 +245,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun awardPoints(points: Int) {
-        // Implement your scoring logic here
-        // For example, update the user's score or perform other actions
-        // In this example, we're just displaying a toast message
+        //add point for every correct answer
         userScore += points
         Toast.makeText(this,"You earned $points points!", Toast.LENGTH_SHORT).show()
     }
@@ -257,7 +254,7 @@ class MainActivity : AppCompatActivity() {
         var randomWord: String
         do {
             randomWord = getRandomWord(difficulty)
-        } while (displayedWords.contains(randomWord))
+        } while (displayedWords.contains(randomWord)) //Display a random word, don't repeat words
 
         displayedWords.add(randomWord)
 
