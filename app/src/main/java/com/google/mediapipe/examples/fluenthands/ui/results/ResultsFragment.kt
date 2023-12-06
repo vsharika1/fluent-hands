@@ -23,16 +23,14 @@ import com.google.mediapipe.examples.fluenthands.db.ResultViewModel
 import com.google.mediapipe.examples.fluenthands.db.ResultViewModelFactory
 
 class ResultsFragment : Fragment() {
-    private lateinit var listView: ListView
+
+    //define variables
     private lateinit var adapter: ResultsAdapter
     private lateinit var database: ResultDatabase
     private lateinit var databaseDao: ResultDatabaseDao
     private lateinit var repository: ResultRepository
     private lateinit var viewModelFactory: ResultViewModelFactory
     private lateinit var resultViewModel: ResultViewModel
-    private lateinit var deleteButton: Button
-    private val resultDataList = mutableListOf<ResultData>()
-    private lateinit var scoreLineChart: LineChart
     private var _binding: FragmentResultsBinding? = null
     private val binding get() = _binding!!
 
@@ -46,6 +44,7 @@ class ResultsFragment : Fragment() {
         _binding = FragmentResultsBinding.inflate(inflater, container, false)
         val view = binding.root
 
+        //functions to setup the UI elements
         setupViewModel()
         setupListView()
         setupLineChart()
@@ -53,6 +52,7 @@ class ResultsFragment : Fragment() {
         return view
     }
 
+    // initialize database and use adapter class to setup the elements on listview
     private fun setupViewModel() {
         val application = requireNotNull(this.activity).application
         database = ResultDatabase.getInstance(application)
@@ -61,10 +61,12 @@ class ResultsFragment : Fragment() {
         viewModelFactory = ResultViewModelFactory(repository)
         resultViewModel = ViewModelProvider(this, viewModelFactory).get(ResultViewModel::class.java)
 
+        //use adapter class to structure listview
         resultViewModel.allResultData.observe(viewLifecycleOwner) { results ->
             adapter.replace(results)
             adapter.notifyDataSetChanged()
 
+            //display results on graph
             if (results.isNotEmpty()) {
                 populateScoreLineChart(results)
             } else {
@@ -73,46 +75,45 @@ class ResultsFragment : Fragment() {
         }
     }
 
+    // create listview
     private fun setupListView() {
         adapter = ResultsAdapter(requireContext(), emptyList())
         binding.resultsList.adapter = adapter
     }
 
-//    private fun setupLineChart() {
-//        binding.scoreLineChart.apply {
-//            description.isEnabled = false
-//            setTouchEnabled(true)
-//            isDragEnabled = true
-//            setScaleEnabled(true)
-//            setPinchZoom(true)
-//        }
-//    }
-private fun setupLineChart() {
-    binding.scoreLineChart.description.isEnabled = false
-    binding.scoreLineChart.setTouchEnabled(true)
-    binding.scoreLineChart.isDragEnabled = true
-    binding.scoreLineChart.setScaleEnabled(true)
-    binding.scoreLineChart.setPinchZoom(true)
+    //create a chart for user performance
+    private fun setupLineChart() {
+        // set up the attributes for graph
+        binding.scoreLineChart.description.isEnabled = false
+        binding.scoreLineChart.setTouchEnabled(true)
+        binding.scoreLineChart.isDragEnabled = true
+        binding.scoreLineChart.setScaleEnabled(true)
+        binding.scoreLineChart.setPinchZoom(true)
 
-    // Set Y-Axis range
-    binding.scoreLineChart.axisLeft.axisMaximum = 100f // Maximum score
-    binding.scoreLineChart.axisLeft.axisMinimum = 0f // Minimum score
-    binding.scoreLineChart.axisRight.isEnabled = false // Disable the right Y-Axis
+        // Set Y-Axis range
+        binding.scoreLineChart.axisLeft.axisMaximum = 100f // Maximum score
+        binding.scoreLineChart.axisLeft.axisMinimum = 0f // Minimum score
+        binding.scoreLineChart.axisRight.isEnabled = false // Disable the right Y-Axis
 
-    // Set X-Axis to represent quiz numbers
-    binding.scoreLineChart.xAxis.granularity = 1f // Show only integer values
-    binding.scoreLineChart.xAxis.setDrawGridLines(false) // Disable grid lines if desired
-}
+        // Set X-Axis to represent quiz numbers
+        binding.scoreLineChart.xAxis.granularity = 1f // Show only integer values
+        binding.scoreLineChart.xAxis.setDrawGridLines(false) // Disable grid lines if desired
+    }
 
+    //add date to line chart for visualization
     private fun populateScoreLineChart(results: List<Result>) {
+
+        //get score from database
         val entries = results.mapIndexed { index, resultData ->
             Entry(index.toFloat(), resultData.score.toFloat())
         }
 
+        //initialize dataset
         val dataSet = LineDataSet(entries, "Scores").apply {
             colors = ColorTemplate.MATERIAL_COLORS.toMutableList()
         }
 
+        //set line chart
         binding.scoreLineChart.data = LineData(dataSet)
         binding.scoreLineChart.invalidate() // Refresh the chart
     }
