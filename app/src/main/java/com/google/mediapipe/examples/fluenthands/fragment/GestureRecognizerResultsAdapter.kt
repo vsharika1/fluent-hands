@@ -33,6 +33,7 @@ class GestureRecognizerResultsAdapter : RecyclerView.Adapter<GestureRecognizerRe
     private var gestureCategories: MutableList<Category?> = mutableListOf()
     private var maxDisplayItemCount: Int = 0
 
+    // Refreshes the displayed results with new categories
     @SuppressLint("NotifyDataSetChanged")
     fun refreshDisplayedResults(newCategories: List<Category>?) {
         resetGestureCategories()
@@ -42,31 +43,37 @@ class GestureRecognizerResultsAdapter : RecyclerView.Adapter<GestureRecognizerRe
         }
     }
 
+    // Resets the gesture categories list
     private fun resetGestureCategories() {
         gestureCategories = MutableList(maxDisplayItemCount) { null }
     }
 
+    // Sorts the categories and populates the gestureCategories list
     private fun sortAndPopulateCategories(categories: List<Category>) {
-        val sortedCategories = categories.sortedByDescending { it.score() }
-        val itemsToDisplay = min(sortedCategories.size, maxDisplayItemCount)
+        val sortedCategories = categories.sortedByDescending { it.score() }// Sort by score in descending order
+        val itemsToDisplay = min(sortedCategories.size, maxDisplayItemCount)// Limit the number of items to display
         for (i in 0 until itemsToDisplay) {
             gestureCategories[i] = sortedCategories[i]
         }
     }
 
+    // Adjusts the number of display items in the list
     fun adjustDisplayItemCount(newSize: Int) {
         maxDisplayItemCount = newSize
         initializeCategoryList()
     }
 
+    // Initializes the gestureCategories list with the specified size
     private fun initializeCategoryList() {
         gestureCategories = MutableList(maxDisplayItemCount) { null }
     }
 
+    // Creates a new ViewHolder for the RecyclerView
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ResultViewHolder {
         return instantiateViewHolderFrom(parent)
     }
 
+    // Instantiates the ViewHolder with the appropriate binding
     private fun instantiateViewHolderFrom(parent: ViewGroup): ResultViewHolder {
         val binding = ItemGestureRecognizerResultBinding.inflate(
             LayoutInflater.from(parent.context),
@@ -80,6 +87,7 @@ class GestureRecognizerResultsAdapter : RecyclerView.Adapter<GestureRecognizerRe
         associateViewHolderWithData(holder, position)
     }
 
+    // Associates the ViewHolder with data based on the position
     private fun associateViewHolderWithData(holder: ResultViewHolder, position: Int) {
         gestureCategories[position]?.let { category ->
             holder.applyCategoryData(category.categoryName(), category.score())
@@ -88,27 +96,33 @@ class GestureRecognizerResultsAdapter : RecyclerView.Adapter<GestureRecognizerRe
 
     override fun getItemCount(): Int = gestureCategories.size
 
+    // Inner class defining the ViewHolder for the RecyclerView
     inner class ResultViewHolder(private val binding: ItemGestureRecognizerResultBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
+        // Applies category data to the ViewHolder elements
         fun applyCategoryData(label: String?, score: Float?) {
             displayLabel(label)
             displayScore(score)
             displayCurrentText()
         }
 
+        // Displays the label of the category
         private fun displayLabel(label: String?) {
             binding.tvLabel.text = label ?: DEFAULT_DISPLAY_VALUE
         }
 
+        // Displays the score of the category
         private fun displayScore(score: Float?) {
             binding.tvScore.text = score?.let { formatScore(it) } ?: DEFAULT_DISPLAY_VALUE
         }
 
+        // Formats the score to a string with two decimal places
         private fun formatScore(score: Float): String {
             return String.format(Locale.US, "%.2f", score)
         }
 
+        // Displays additional text in the ViewHolder
         private fun displayCurrentText() {
             binding.textLabel.text = ContextHolder.currentWord
         }

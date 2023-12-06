@@ -13,18 +13,6 @@ class ResultViewModel(private var repository: ResultRepository): ViewModel() {
     fun insertResult(result: Result) {
         repository.insertResult(result)
     }
-    fun getResultById(resultId: Long): LiveData<Result> {
-        return repository.getResultById(resultId)
-    }
-    fun deleteResultById(resultId: Long) {
-        repository.deleteResultById(resultId)
-    }
-
-    fun deleteAll(){
-        val commentList = allResultData.value
-        if (commentList != null && commentList.size > 0)
-            repository.deleteAll()
-    }
 
 }
 

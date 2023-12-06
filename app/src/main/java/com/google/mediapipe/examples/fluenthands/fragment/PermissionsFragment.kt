@@ -21,13 +21,15 @@ class PermissionsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //if camera permissions granted open camera
         if (cameraPermissionIsGranted()) {
             goToCameraFragment()
         } else {
-            requestCameraPermission()
+            requestCameraPermission() // else request permissions
         }
     }
 
+    // Checks if camera permission is granted
     private fun cameraPermissionIsGranted(): Boolean {
         return ContextCompat.checkSelfPermission(
             requireContext(),
@@ -35,14 +37,16 @@ class PermissionsFragment : Fragment() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    // Requests the camera permission
     private fun requestCameraPermission() {
         cameraPermissionRequest.launch(Manifest.permission.CAMERA)
     }
 
+    // Processes the result of the camera permission request
     private fun processCameraPermissionResult(isGranted: Boolean) {
         if (isGranted) {
             displayToast("Camera Permission Granted")
-            goToCameraFragment()
+            goToCameraFragment()// Navigate to camera fragment if permission is granted
         } else {
             displayToast("Camera Permission Denied")
         }
@@ -52,6 +56,7 @@ class PermissionsFragment : Fragment() {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 
+    // Navigates to the camera fragment
     private fun goToCameraFragment() {
         lifecycleScope.launchWhenStarted {
             Navigation.findNavController(requireActivity(), R.id.fragment_container)

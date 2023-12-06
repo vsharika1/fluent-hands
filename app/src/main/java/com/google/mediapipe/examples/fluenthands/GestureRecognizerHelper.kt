@@ -43,8 +43,6 @@ class GestureRecognizerHelper(
     var isFrontCamera: Boolean = true
 ) {
 
-    // For this example this needs to be a var so it can be reset on changes. If the GestureRecognizer
-    // will not change, a lazy val would be preferable.
     private var gestureRecognizer: GestureRecognizer? = null
 
     init {
@@ -56,10 +54,7 @@ class GestureRecognizerHelper(
         gestureRecognizer = null
     }
 
-    // Initialize the gesture recognizer using current settings on the
-    // thread that is using it. CPU can be used with recognizers
-    // that are created on the main thread and used on a background thread, but
-    // the GPU delegate needs to be used on the thread that initialized the recognizer
+    // Sets up the gesture recognizer with the current configuration
     fun setupGestureRecognizer() {
         try {
             val baseOptions = configureBaseOptions()
@@ -71,48 +66,52 @@ class GestureRecognizerHelper(
         }
     }
 
+    // Configures the base options for the gesture recognizer
     private fun configureBaseOptions(): BaseOptions {
         val baseOptionBuilder = BaseOptions.builder()
         baseOptionBuilder.apply {
-            setModelAssetPath(MP_RECOGNIZER_TASK)
-            setDelegate(getDelegateBasedOnType())
+            setModelAssetPath(MP_RECOGNIZER_TASK)// Sets the path to the gesture recognition model
+            setDelegate(getDelegateBasedOnType())// Sets the computation delegate (CPU/GPU)
         }
-        return baseOptionBuilder.build()
+        return baseOptionBuilder.build() // Builds and returns the configured base options
     }
 
+
+    // Determines the delegate type based on the current configuration
     private fun getDelegateBasedOnType(): Delegate = when (currentDelegate) {
-        DELEGATE_CPU -> Delegate.CPU
-        DELEGATE_GPU -> Delegate.GPU
-        else -> Delegate.CPU
+        DELEGATE_CPU -> Delegate.CPU// Uses CPU for processing
+        DELEGATE_GPU -> Delegate.GPU// Uses GPU for faster processing
+        else -> Delegate.CPU// Defaults to CPU if no specific delegate is set
     }
 
+    // Builds gesture recognition options from the base configuration
     private fun buildGestureOptions(baseOptions: BaseOptions): GestureRecognizer.GestureRecognizerOptions {
         val optionsBuilder =
             GestureRecognizer.GestureRecognizerOptions.builder()
                 .setBaseOptions(baseOptions)
-                .setNumHands(handCount)
-                .setMinHandDetectionConfidence(detectionConfidence)
-                .setMinTrackingConfidence(trackingConfidence)
-                .setMinHandPresenceConfidence(minHandPresenceConfidence)
-                .setRunningMode(mode)
+                .setNumHands(handCount)// Sets the number of hands to detect
+                .setMinHandDetectionConfidence(detectionConfidence)// Sets the minimum confidence for detection
+                .setMinTrackingConfidence(trackingConfidence)// Sets the minimum confidence for tracking
+                .setMinHandPresenceConfidence(minHandPresenceConfidence)// Sets the minimum confidence for hand presence
+                .setRunningMode(mode)// Sets the running mode (image or live stream)
 
         if (mode == RunningMode.LIVE_STREAM) {
             optionsBuilder
-                .setResultListener(this::returnLivestreamResult)
-                .setErrorListener(this::returnLivestreamError)
+                .setResultListener(this::returnLivestreamResult) // Sets the listener for results in live stream mode
+                .setErrorListener(this::returnLivestreamError)// Sets the listener for errors in live stream mode
         }
-        return optionsBuilder.build()
+        return optionsBuilder.build()// Builds and returns the gesture options
     }
 
+    // Handles exceptions during gesture recognizer setup
     private fun handleGestureSetupException(e: Exception) {
         val errorMessage = "Gesture recognizer failed to initialize. See error logs for details"
-        // Assuming a default error code, like -1, to represent an unknown or non-runtime error.
-        val errorCode = if (e is RuntimeException) GPU_ERROR else -1
-        gestureListener?.onError(errorMessage, errorCode)
+        val errorCode = if (e is RuntimeException) GPU_ERROR else -1 // Assigns an error code based on the exception type
+        gestureListener?.onError(errorMessage, errorCode)// Notifies the listener of the error
         Log.e(TAG, "MP Task Vision failed to load the task with error: ${e.message}")
     }
 
-    // Convert the ImageProxy to MP Image and feed it to GestureRecognizer.
+    // Recognizes gestures from a live camera feed using ImageProxy
     fun recognizeLiveStream(imageProxy: ImageProxy) {
         val frameTime = SystemClock.uptimeMillis()
         val bitmapBuffer = createBitmapFromImageProxy(imageProxy)
@@ -122,24 +121,25 @@ class GestureRecognizerHelper(
         recognizeAsync(mpImage, frameTime)
     }
 
+    // Creates a bitmap from an ImageProxy
     private fun createBitmapFromImageProxy(imageProxy: ImageProxy): Bitmap {
         val bitmap = Bitmap.createBitmap(
             imageProxy.width, imageProxy.height, Bitmap.Config.ARGB_8888
         )
         try {
             val buffer = imageProxy.planes[0].buffer
-            bitmap.copyPixelsFromBuffer(buffer)
+            bitmap.copyPixelsFromBuffer(buffer) // Copies pixel data from the buffer to the bitmap
         } finally {
             imageProxy.close() // Ensure that the ImageProxy is always closed
         }
         return bitmap
     }
 
-
+    // Rotates a bitmap based on the orientation of the ImageProxy
     private fun rotateBitmap(bitmap: Bitmap, imageProxy: ImageProxy): Bitmap {
         val matrix = Matrix().apply {
-            postRotate(imageProxy.imageInfo.rotationDegrees.toFloat())
-            val rotation = if (isFrontCamera) -1f else 1f
+            postRotate(imageProxy.imageInfo.rotationDegrees.toFloat()) // Applies rotation based on image info
+            val rotation = if (isFrontCamera) -1f else 1f // Adjusts rotation based on camera type
             postScale(rotation, 1f, imageProxy.width.toFloat(), imageProxy.height.toFloat())
         }
         return Bitmap.createBitmap(
@@ -153,11 +153,12 @@ class GestureRecognizerHelper(
     }
 
 
-    // Return running status of the recognizer helper
+    // Returns whether the gesture recognizer has been closed
     fun isClosed(): Boolean {
         return gestureRecognizer == null
     }
 
+    // Processes and returns results for live stream gesture recognition
     private fun returnLivestreamResult(
         result: GestureRecognizerResult, input: MPImage
     ) {
@@ -174,6 +175,7 @@ class GestureRecognizerHelper(
         )
     }
 
+    // Handles errors during live stream gesture recognition
     private fun returnLivestreamError(error: RuntimeException) {
         gestureListener?.onError(
             error.message ?: "An unknown error has occurred"
@@ -201,6 +203,7 @@ class GestureRecognizerHelper(
         val imageWidth: Int,
     )
 
+    // Interface for handling gesture recognition events
     interface GestureRecognizerListener {
         fun onError(error: String, errorCode: Int = ERROR)
         fun onResults(resultBundle: ResultBundle)

@@ -47,6 +47,7 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
         private const val TAG = "Hand gesture recognizer"
     }
 
+    //variable declarations
     private var _cameraBinding: FragmentCameraBinding? = null
 
     private val cameraBinding get() = _cameraBinding!!
@@ -74,18 +75,21 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
         restartGestureRecognizer()
     }
 
+    // Check if the camera permissions are granted
     private fun checkPermissions() {
         if (!PermissionsFragment.checkCameraPermission(requireContext())) {
             navigateToPermissions()
         }
     }
 
+    // Navigate to permissions fragment if permissions are not granted
     private fun navigateToPermissions() {
         Navigation.findNavController(
             requireActivity(), R.id.fragment_container
         ).navigate(R.id.action_camera_to_permissions)
     }
 
+    // Restart gesture recognizer on resume
     private fun restartGestureRecognizer() {
         backgroundExecutor.execute {
             if (gestureHelper.isClosed()) {
@@ -94,12 +98,14 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
         }
     }
 
+    // Save gesture settings and close gesture recognizer on pause
     override fun onPause() {
         super.onPause()
         saveGestureSettings()
         closeGestureRecognizer()
     }
 
+    // Save current gesture recognizer settings to ViewModel
     private fun saveGestureSettings() {
         if (this::gestureHelper.isInitialized) {
             viewModel.setMinHandDetectionConfidence(gestureHelper.detectionConfidence)
@@ -136,6 +142,7 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
     }
 
 
+    // Setup UI and initialize necessary components after the view is created
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
@@ -156,6 +163,7 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
         backgroundExecutor = Executors.newSingleThreadExecutor()
     }
 
+    // Prepare the camera setup by setting up the camera after the view is ready
     private fun prepareCameraSetup() {
         cameraBinding.viewFinder.post {
             setUpCamera()
@@ -168,6 +176,7 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
         }
     }
 
+    // Create a new instance of GestureRecognizerHelper
     private fun createGestureRecognizerHelper() {
         gestureHelper = GestureRecognizerHelper(
             context = requireContext(),
@@ -185,12 +194,14 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
     }
 
 
+    // Initialize controls on the bottom sheet
     private fun initBottomSheetControls() {
         updateThresholdValues()
         setupThresholdAdjustmentButtons()
         setupDelegateSpinner()
     }
 
+    // Update the threshold values displayed in the UI
     private fun updateThresholdValues() {
         with(cameraBinding.bottomSheetLayout) {
             detectionThresholdValue.text = formatConfidence(viewModel.currentMinHandDetectionConfidence)
@@ -199,24 +210,31 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
         }
     }
 
+    // Format confidence values for display
     private fun formatConfidence(value: Float): String {
         return String.format(Locale.US, "%.2f", value)
     }
 
+    // Setup buttons for adjusting detection, tracking, and presence thresholds
     private fun setupThresholdAdjustmentButtons() {
         with(cameraBinding.bottomSheetLayout) {
+            // Setup buttons for adjusting detection threshold
             setupAdjustmentButton(detectionThresholdMinus, 0.2f, 0.1f, true) {
                 gestureHelper.detectionConfidence -= it
             }
             setupAdjustmentButton(detectionThresholdPlus, 0.8f, 0.1f, false) {
                 gestureHelper.detectionConfidence += it
             }
+
+            // Setup buttons for adjusting tracking threshold
             setupAdjustmentButton(trackingThresholdMinus, 0.2f, 0.1f, true) {
                 gestureHelper.trackingConfidence -= it
             }
             setupAdjustmentButton(trackingThresholdPlus, 0.8f, 0.1f, false) {
                 gestureHelper.trackingConfidence += it
             }
+
+            // Setup buttons for adjusting presence threshold
             setupAdjustmentButton(presenceThresholdMinus, 0.2f, 0.1f, true) {
                 gestureHelper.minHandPresenceConfidence -= it
             }
@@ -226,6 +244,7 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
         }
     }
 
+    // Configure each threshold adjustment button
     private fun setupAdjustmentButton(
         button: View,
         threshold: Float,
@@ -244,6 +263,7 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
         }
     }
 
+    // Setup the delegate selection spinner in the bottom sheet
     private fun setupDelegateSpinner() {
         with(cameraBinding.bottomSheetLayout.spinnerDelegate) {
             setSelection(viewModel.currentDelegate, false)
@@ -263,7 +283,7 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
     }
 
 
-    // Update the values displayed in the bottom sheet. Reset recognition helper.
+    // Update UI controls based on gesture recognizer settings
     private fun updateControlsUi() {
         cameraBinding.bottomSheetLayout.detectionThresholdValue.text =
             String.format(
@@ -284,6 +304,7 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
                 gestureHelper.minHandPresenceConfidence
             )
 
+        // Reset and setup gesture recognizer after changes
         backgroundExecutor.execute {
             gestureHelper.clearGestureRecognizer()
             gestureHelper.setupGestureRecognizer()
@@ -345,21 +366,26 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
         }
     }
 
+    // Function to recognize hand gestures in a live camera feed
     private fun recognizeHand(imageProxy: ImageProxy) {
         gestureHelper.recognizeLiveStream(
             imageProxy = imageProxy,
         )
     }
 
+    // Handles configuration changes, such as device orientation change
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
+        // Update the target rotation of the image analyzer based on the new configuration
         imgAnalyzer?.targetRotation = cameraBinding.viewFinder.display.rotation
     }
 
-    // Update UI after a hand gesture has been recognized
+    // Callback function that gets triggered when a hand gesture is recognized
     override fun onResults(resultBundle: GestureRecognizerHelper.ResultBundle) {
         activity?.runOnUiThread {
+            // Check if the camera binding is not null before updating the UI
             if (_cameraBinding != null) {
+                // Update the UI based on the recognized gestures
                 updateResultsDisplay(resultBundle)
                 updateInferenceTime(resultBundle)
                 updateOverlay(resultBundle)
@@ -367,22 +393,29 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
         }
     }
 
+    // Updates the display with the recognized gesture results
     private fun updateResultsDisplay(resultBundle: GestureRecognizerHelper.ResultBundle) {
+        // Extract gesture categories and select the most relevant results
         val gestureCategories = resultBundle.results.first().gestures()
         val results = if (gestureCategories.isNotEmpty()) {
             gestureCategories.first()
         } else {
             emptyList()
         }
+        // Refresh the adapter to display the new gesture results
         gestureAdapter.refreshDisplayedResults(results)
     }
 
+    // Updates the inference time display
     private fun updateInferenceTime(resultBundle: GestureRecognizerHelper.ResultBundle) {
+        // Format the inference time and update the corresponding UI element
         val formattedTime = String.format("%d ms", resultBundle.inferenceTime)
         cameraBinding.bottomSheetLayout.inferenceTimeVal.text = formattedTime
     }
 
+    // Updates the overlay with the gesture recognition results
     private fun updateOverlay(resultBundle: GestureRecognizerHelper.ResultBundle) {
+        // Set the results in the overlay and invalidate it to redraw
         cameraBinding.overlay.setResults(
             resultBundle.results.first(),
             resultBundle.imageHeight,
@@ -392,13 +425,16 @@ class CameraFragment : Fragment(), GestureRecognizerHelper.GestureRecognizerList
         cameraBinding.overlay.invalidate()
     }
 
-
+    // Error handling function
     override fun onError(error: String, errorCode: Int) {
         activity?.runOnUiThread {
             Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
+            // Clear any displayed results in case of an error
             gestureAdapter.refreshDisplayedResults(emptyList())
 
+            // Handle specific error codes, e.g., GPU-related errors
             if (errorCode == GestureRecognizerHelper.GPU_ERROR) {
+                // Change the processing delegate to CPU in case of GPU errors
                 cameraBinding.bottomSheetLayout.spinnerDelegate.setSelection(
                     GestureRecognizerHelper.DELEGATE_CPU, false
                 )

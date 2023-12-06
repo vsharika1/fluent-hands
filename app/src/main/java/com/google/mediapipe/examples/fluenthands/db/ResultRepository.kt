@@ -13,27 +13,6 @@ class ResultRepository(private val resultDatabaseDao: ResultDatabaseDao) {
         CoroutineScope(Dispatchers.IO).launch {
             resultDatabaseDao.addResult(result)
         }
-    }
 
-    fun getResultById(resultId: Long): LiveData<Result> {
-        return resultDatabaseDao.getResultById(resultId)
-    }
-
-    fun deleteResultTable() {
-        CoroutineScope(Dispatchers.IO).launch {
-            resultDatabaseDao.deleteAll()
-        }
-    }
-
-    fun deleteResultById(resultId: Long) {
-        CoroutineScope(Dispatchers.IO).launch {
-            resultDatabaseDao.deleteExerciseById(resultId)
-        }
-    }
-
-    fun deleteAll(){
-        CoroutineScope(Dispatchers.IO).launch {
-            resultDatabaseDao.deleteAll()
-        }
     }
 }
